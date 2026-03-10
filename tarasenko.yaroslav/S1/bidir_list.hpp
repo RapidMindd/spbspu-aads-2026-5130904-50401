@@ -9,8 +9,8 @@ namespace tarasenko
   struct Node
   {
     T _val;
-    Node* _next;
-    Node* _prev;
+    Node< T >* _next;
+    Node< T >* _prev;
   };
 
   template< class T >
@@ -24,6 +24,8 @@ namespace tarasenko
   public:
     ListIter();
     bool operator==(const ListIter< T >& it) const;
+  private:
+    ListIter(Node< T >* node);
   };
 
   template< class T >
@@ -34,6 +36,8 @@ namespace tarasenko
   public:
     ListConstIter();
     bool operator==(const ListConstIter< T >& it) const;
+  private:
+    ListConstIter(Node< T >* node);
   };
 
   template< class T >
@@ -51,6 +55,81 @@ namespace tarasenko
     ListIter< T > end();
     ListConstIter< T > cend() const;
   };
+
+  template< class T >
+  BidirList< T >::BidirList() :
+    _head(nullptr),
+    _tail(nullptr),
+    _size(1)
+  {}
+
+  template< class T >
+  BidirList< T >::~BidirList()
+  {
+
+  }
+
+  template< class T >
+  size_t BidirList< T >::size() const
+  {
+    return _size;
+  }
+
+  template< class T >
+  ListIter< T > BidirList< T >::begin()
+  {
+    return ListIter< T >(_head);
+  }
+
+  template< class T >
+  ListConstIter< T > BidirList< T >::cbegin() const
+  {
+    return ListConstIter< T >(_head);
+  }
+
+   template< class T >
+  ListIter< T > BidirList< T >::end()
+  {
+    return ListIter< T >(_tail);
+  }
+
+  template< class T >
+  ListConstIter< T > BidirList< T >::cend() const
+  {
+    return ListConstIter< T >(_tail);
+  }
+
+  template< class T >
+  ListIter< T >::ListIter() :
+    ptr(nullptr)
+  {}
+
+  template< class T >
+  ListConstIter< T >::ListConstIter() :
+    ptr(nullptr)
+  {}
+
+  template< class T >
+  ListIter< T >::ListIter(Node< T >* node) :
+    ptr(node)
+  {}
+
+  template< class T >
+  ListConstIter< T >::ListConstIter(Node< T >* node) :
+    ptr(node)
+  {}
+
+  template< class T >
+  bool ListIter< T >::operator==(const ListIter< T >& it) const
+  {
+    return ptr != it.ptr;
+  }
+
+  template< class T >
+  bool ListConstIter< T >::operator==(const ListConstIter< T >& it) const
+  {
+    return ptr != it.ptr;
+  }
 }
 
 #endif
