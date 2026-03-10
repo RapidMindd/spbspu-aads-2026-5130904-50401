@@ -41,3 +41,21 @@ BOOST_AUTO_TEST_CASE(accessing_fields)
   BOOST_CHECK(list.begin()->a == 5);
   BOOST_CHECK(list.cbegin()->a == 5);
 }
+
+BOOST_AUTO_TEST_CASE(increment)
+{
+  tarasenko::BidirList< int > list;
+  list.push_back(5);
+  list.push_back(2);
+  list.push_back(3);
+  tarasenko::ListIter< int > it = list.begin();
+  tarasenko::ListConstIter< int > cit = list.cbegin();
+  BOOST_CHECK(*(it++) == 5);
+  BOOST_CHECK(*it == 2);
+  BOOST_CHECK(*(++it) == 3);
+  BOOST_CHECK(++it == list.end());
+  BOOST_CHECK(*(cit++) == 5);
+  BOOST_CHECK(*cit == 2);
+  BOOST_CHECK(*(++cit) == 3);
+  BOOST_CHECK(++cit == list.cend());
+}
