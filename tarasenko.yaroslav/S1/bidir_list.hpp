@@ -20,8 +20,8 @@ namespace tarasenko
   class ListIter
   {
     friend class BidirList< T >;
-    Node< T >* ptr;
-    const BidirList< T >* owner;
+    Node< T >* _ptr;
+    const BidirList< T >* _owner;
   public:
     ListIter();
     bool operator==(const ListIter< T >& it) const;
@@ -40,8 +40,8 @@ namespace tarasenko
   class ListConstIter
   {
     friend class BidirList< T >;
-    Node< T >* ptr;
-    const BidirList< T >* owner;
+    Node< T >* _ptr;
+    const BidirList< T >* _owner;
   public:
     ListConstIter();
     bool operator==(const ListConstIter< T >& it) const;
@@ -77,6 +77,10 @@ namespace tarasenko
     bool empty();
     T& front();
     T& back();
+    ListIter< T > erase(ListIter< T > it);
+    ListIter< T > erase(ListIter< T > start, ListIter< T > end);
+    void pop_front();
+    void pop_back();
   };
 
   template< class T >
@@ -130,50 +134,50 @@ namespace tarasenko
 
   template< class T >
   ListIter< T >::ListIter() :
-    ptr(nullptr),
-    owner(nullptr)
+    _ptr(nullptr),
+    _owner(nullptr)
   {}
 
   template< class T >
   ListConstIter< T >::ListConstIter() :
-    ptr(nullptr),
-    owner(nullptr)
+    _ptr(nullptr),
+    _owner(nullptr)
   {}
 
   template< class T >
   ListIter< T >::ListIter(Node< T >* node, const BidirList< T >* list) :
-    ptr(node),
-    owner(list)
+    _ptr(node),
+    _owner(list)
   {}
 
   template< class T >
   ListConstIter< T >::ListConstIter(Node< T >* node, const BidirList< T >* list) :
-    ptr(node),
-    owner(list)
+    _ptr(node),
+    _owner(list)
   {}
 
   template< class T >
   bool ListIter< T >::operator==(const ListIter< T >& it) const
   {
-    return ptr == it.ptr;
+    return _ptr == it._ptr;
   }
 
   template< class T >
   bool ListIter< T >::operator!=(const ListIter< T >& it) const
   {
-    return !(ptr == it.ptr);
+    return !(_ptr == it._ptr);
   }
 
   template< class T >
   bool ListConstIter< T >::operator==(const ListConstIter< T >& it) const
   {
-    return ptr == it.ptr;
+    return _ptr == it._ptr;
   }
 
   template< class T >
   bool ListConstIter< T >::operator!=(const ListConstIter< T >& it) const
   {
-    return !(ptr == it.ptr);
+    return !(_ptr == it._ptr);
   }
 
   template< class T >
@@ -197,38 +201,38 @@ namespace tarasenko
   template< class T >
   T& ListIter< T >::operator*() const
   {
-    return ptr->_val;
+    return _ptr->_val;
   }
 
   template< class T >
   const T& ListConstIter< T >::operator*() const
   {
-    return ptr->_val;
+    return _ptr->_val;
   }
 
   template< class T >
   T* ListIter< T >:: operator->() const
   {
-    return &ptr->_val;
+    return &_ptr->_val;
   }
 
   template< class T >
   const T* ListConstIter< T >:: operator->() const
   {
-    return &ptr->_val;
+    return &_ptr->_val;
   }
 
   template< class T >
   ListIter< T >& ListIter< T >::operator++()
   {
-    ptr = ptr->_next;
+    _ptr = _ptr->_next;
     return *this;
   }
 
   template< class T >
   ListConstIter< T >& ListConstIter< T >::operator++()
   {
-    ptr = ptr->_next;
+    _ptr = _ptr->_next;
     return *this;
   }
 
@@ -236,7 +240,7 @@ namespace tarasenko
   ListIter< T > ListIter< T >::operator++(int)
   {
     ListIter< T > copy(*this);
-    ptr = ptr->_next;
+    _ptr = _ptr->_next;
     return copy;
   }
 
@@ -244,57 +248,57 @@ namespace tarasenko
   ListConstIter< T > ListConstIter< T >::operator++(int)
   {
     ListConstIter< T > copy(*this);
-    ptr = ptr->_next;
+    _ptr = _ptr->_next;
     return copy;
   }
 
   template< class T >
   ListIter< T >& ListIter< T >::operator--()
   {
-    if (ptr == nullptr)
+    if (_ptr == nullptr)
     {
-      ptr = owner->_tail;
+      _ptr = _owner->_tail;
       return *this;
     }
-    ptr = ptr->_prev;
+    _ptr = _ptr->_prev;
     return *this;
   }
 
   template< class T >
   ListConstIter< T >& ListConstIter< T >::operator--()
   {
-    if (ptr == nullptr)
+    if (_ptr == nullptr)
     {
-      ptr = owner->_tail;
+      _ptr = _owner->_tail;
       return *this;
     }
-    ptr = ptr->_prev;
+    _ptr = _ptr->_prev;
     return *this;
   }
 
   template< class T >
   ListIter< T > ListIter< T >::operator--(int)
   {
-    if (ptr == nullptr)
+    if (_ptr == nullptr)
     {
-      ptr = owner->_tail;
+      _ptr = _owner->_tail;
       return *this;
     }
     ListIter< T > copy(*this);
-    ptr = ptr->_prev;
+    _ptr = _ptr->_prev;
     return copy;
   }
 
   template< class T >
   ListConstIter< T > ListConstIter< T >::operator--(int)
   {
-    if (ptr == nullptr)
+    if (_ptr == nullptr)
     {
-      ptr = owner->_tail;
+      _ptr = _owner->_tail;
       return *this;
     }
     ListConstIter< T > copy(*this);
-    ptr = ptr->_prev;
+    _ptr = _ptr->_prev;
     return copy;
   }
 
@@ -331,6 +335,44 @@ namespace tarasenko
   T& BidirList< T >::back()
   {
     return _tail->_val;
+  }
+
+  template< class T >
+  ListIter< T > BidirList< T >::erase(ListIter< T > it)
+  {
+    Node< T >* next = it._ptr->_next;
+    Node< T >* prev = it._ptr->_prev;
+    delete it._ptr;
+    if (next != nullptr)
+    {
+      next->_prev = prev;
+    }
+    else
+    {
+      _tail = prev;
+    }
+
+    if (prev != nullptr)
+    {
+      prev->_next = next;
+    }
+    else
+    {
+      _head = next;
+    }
+    it._ptr = next;
+    _size--;
+    return it;
+  }
+
+  template< class T >
+  ListIter< T > BidirList< T >::erase(ListIter< T > first, ListIter< T > last)
+  {
+    while(first != last)
+    {
+      first = erase(first);
+    }
+    return first;
   }
 }
 

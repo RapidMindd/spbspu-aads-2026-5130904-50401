@@ -117,3 +117,68 @@ BOOST_AUTO_TEST_CASE(accessint_edge_elems)
   BOOST_CHECK(list.front() == 5);
   BOOST_CHECK(list.back() == 2);
 }
+
+BOOST_AUTO_TEST_CASE(erase_single_elem)
+{
+  tarasenko::BidirList< int > list;
+  list.push_back(5);
+  list.erase(list.begin());
+  BOOST_CHECK(list.empty());
+  BOOST_CHECK(list.begin() == list.end());
+}
+
+BOOST_AUTO_TEST_CASE(erase_one_elem_from_head)
+{
+  tarasenko::BidirList< int > list;
+  list.push_back(5);
+  list.push_back(2);
+  tarasenko::ListIter< int > it = list.begin();
+  it = list.erase(it);
+  BOOST_CHECK(list.size() == 1);
+  BOOST_CHECK(*(list.begin()) == 2);
+  BOOST_CHECK(*it == 2);
+}
+
+BOOST_AUTO_TEST_CASE(erase_one_elem_from_tail)
+{
+  tarasenko::BidirList< int > list;
+  list.push_back(5);
+  list.push_back(2);
+  tarasenko::ListIter< int > it = --(list.end());
+  it = list.erase(it);
+  BOOST_CHECK(list.size() == 1);
+  BOOST_CHECK(*(--(list.end())) == 5);
+  BOOST_CHECK(*(--it) == 5);
+}
+
+BOOST_AUTO_TEST_CASE(erase_one_elem_from_middle)
+{
+  tarasenko::BidirList< int > list;
+  list.push_back(5);
+  list.push_back(2);
+  list.push_back(3);
+  tarasenko::ListIter< int > it = ++(list.begin());
+  it = list.erase(it);
+  BOOST_CHECK(list.size() == 2);
+  BOOST_CHECK(*it == 3);
+  BOOST_CHECK(*(--it) == 5);
+}
+
+BOOST_AUTO_TEST_CASE(erase_elems)
+{
+  tarasenko::BidirList< int > list;
+  for (size_t i = 0; i < 10; ++i)
+  {
+    list.push_back(i);
+  }
+  tarasenko::ListIter< int > first = list.begin();
+  tarasenko::ListIter< int > last = list.end();
+  for (size_t i = 0; i < 3; ++i)
+  {
+    ++first;
+    --last;
+  }
+  first = list.erase(first, last);
+  BOOST_CHECK(list.size() == 6);
+  BOOST_CHECK(*first == 7);
+}
