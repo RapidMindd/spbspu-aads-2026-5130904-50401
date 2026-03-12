@@ -181,4 +181,22 @@ BOOST_AUTO_TEST_CASE(erase_elems)
   first = list.erase(first, last);
   BOOST_CHECK(list.size() == 6);
   BOOST_CHECK(*first == 7);
+  BOOST_CHECK(*(--first) == 2);
+}
+
+BOOST_AUTO_TEST_CASE(erase_from_edges)
+{
+  tarasenko::BidirList< int > list;
+  for (size_t i = 0; i < 10; ++i)
+  {
+    list.push_back(i);
+  }
+  for (size_t i = 0; i < 3; ++i)
+  {
+    list.pop_back();
+    list.pop_front();
+  }
+  BOOST_CHECK(list.size() == 4);
+  BOOST_CHECK(*(list.begin()) == 3);
+  BOOST_CHECK(*(--(list.end())) == 6);
 }

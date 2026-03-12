@@ -374,6 +374,18 @@ namespace tarasenko
     }
     return first;
   }
+
+  template< class T >
+  void BidirList< T >::pop_front()
+  {
+    erase(begin());
+  }
+
+  template< class T >
+  void BidirList< T >::pop_back()
+  {
+    erase(--end());
+  }
 }
 
 #endif
