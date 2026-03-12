@@ -214,3 +214,20 @@ BOOST_AUTO_TEST_CASE(insert)
   BOOST_CHECK(list.size() == 3);
   BOOST_CHECK(*(++(list.begin())) == 3);
 }
+
+BOOST_AUTO_TEST_CASE(clear)
+{
+  tarasenko::BidirList< int > list;
+  list.clear();
+  BOOST_CHECK(list.empty() == true);
+  BOOST_CHECK(list.begin() == list.end());
+  BOOST_CHECK(list.cbegin() == list.cend());
+  for (size_t i = 0; i < 10; ++i)
+  {
+    list.push_back(i);
+  }
+  list.clear();
+  BOOST_CHECK(list.empty() == true);
+  BOOST_CHECK(list.begin() == list.end());
+  BOOST_CHECK(list.cbegin() == list.cend());
+}

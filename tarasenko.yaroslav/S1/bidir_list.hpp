@@ -85,6 +85,7 @@ namespace tarasenko
     void pop_back();
     ListIter< T > insert(ListIter< T > it, const T& val);
     ListIter< T > insert(ListIter< T > it, T&& val);
+    void clear();
   };
 
   template< class T >
@@ -97,13 +98,7 @@ namespace tarasenko
   template< class T >
   BidirList< T >::~BidirList()
   {
-    Node< T >* current = _head;
-    while(current)
-    {
-      Node< T >* next = current->_next;
-      delete current;
-      current = next;
-    }
+    clear();
   }
 
   template< class T >
@@ -445,6 +440,12 @@ namespace tarasenko
     }
     _size++;
     return ListIter< T >(new_node, this);
+  }
+
+  template< class T >
+  void BidirList< T >::clear()
+  {
+    erase(begin(), end());
   }
 }
 
