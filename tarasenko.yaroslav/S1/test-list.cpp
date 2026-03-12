@@ -200,3 +200,17 @@ BOOST_AUTO_TEST_CASE(erase_from_edges)
   BOOST_CHECK(*(list.begin()) == 3);
   BOOST_CHECK(*(--(list.end())) == 6);
 }
+
+BOOST_AUTO_TEST_CASE(insert)
+{
+  tarasenko::BidirList< int > list;
+  list.insert(list.begin(), 5);
+  BOOST_CHECK(list.size() == 1);
+  BOOST_CHECK(*(list.begin()) == 5);
+  list.insert(list.end(), 2);
+  BOOST_CHECK(list.size() == 2);
+  BOOST_CHECK(*(++(list.begin())) == 2);
+  list.insert(--(list.end()), 3);
+  BOOST_CHECK(list.size() == 3);
+  BOOST_CHECK(*(++(list.begin())) == 3);
+}

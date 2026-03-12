@@ -74,6 +74,8 @@ namespace tarasenko
     ListConstIter< T > cend() const;
     void push_back(const T& val);
     void push_front(const T& val);
+    void push_back(T&& val);
+    void push_front(T&& val);
     bool empty();
     T& front();
     T& back();
@@ -81,6 +83,8 @@ namespace tarasenko
     ListIter< T > erase(ListIter< T > start, ListIter< T > end);
     void pop_front();
     void pop_back();
+    ListIter< T > insert(ListIter< T > it, const T& val);
+    ListIter< T > insert(ListIter< T > it, T&& val);
   };
 
   template< class T >
@@ -183,19 +187,25 @@ namespace tarasenko
   template< class T >
   void BidirList< T >::push_back(const T& val)
   {
-    if (_size)
-    {
-      Node< T >* elem = new Node< T >{val, nullptr, _tail};
-      _tail->_next = elem;
-      _tail = elem;
-    }
-    else
-    {
-      Node< T >* elem = new Node< T >{val, nullptr, nullptr};
-      _head = elem;
-      _tail = elem;
-    }
-    _size++;
+    insert(end(), val);
+  }
+
+    template< class T >
+  void BidirList< T >::push_back(T&& val)
+  {
+    insert(end(), std::move(val));
+  }
+
+  template< class T >
+  void BidirList< T >::push_front(const T& val)
+  {
+    insert(begin(), val);
+  }
+
+  template< class T >
+  void BidirList< T >::push_front(T&& val)
+  {
+    insert(begin(), std::move(val));
   }
 
   template< class T >
@@ -303,24 +313,6 @@ namespace tarasenko
   }
 
   template< class T >
-  void BidirList< T >::push_front(const T& val)
-  {
-    if (_size)
-    {
-      Node< T >* elem = new Node< T >{val, _head, nullptr};
-      _head->_prev = elem;
-      _head = elem;
-    }
-    else
-    {
-      Node< T >* elem = new Node< T >{val, nullptr, nullptr};
-      _head = elem;
-      _tail = elem;
-    }
-    _size++;
-  }
-
-  template< class T >
   bool BidirList< T >::empty()
   {
     return !_size;
@@ -385,6 +377,74 @@ namespace tarasenko
   void BidirList< T >::pop_back()
   {
     erase(--end());
+  }
+
+  template< class T >
+  ListIter< T > BidirList< T >::insert(ListIter< T > it, const T& val)
+  {
+    Node< T >* new_node;
+    if (empty())
+    {
+      new_node = new Node< T >{val, nullptr, nullptr};
+      _head = new_node;
+      _tail = new_node;
+    }
+    else if (it._ptr == nullptr)
+    {
+      new_node = new Node< T >{val, nullptr, _tail};
+      _tail->_next = new_node;
+      _tail = new_node;
+    }
+    else
+    {
+      new_node = new Node< T >{val, it._ptr, it._ptr->_prev};
+      if (it._ptr->_prev == nullptr)
+      {
+        _head->_prev = new_node;
+        _head = new_node;
+      }
+      else
+      {
+        it._ptr->_prev->_next = new_node;
+        it._ptr->_prev = new_node;
+      }
+    }
+    _size++;
+    return ListIter< T >(new_node, this);
+  }
+
+  template< class T >
+  ListIter< T > BidirList< T >::insert(ListIter< T > it, T&& val)
+  {
+    Node< T >* new_node;
+    if (empty())
+    {
+      new_node = new Node< T >{std::move(val), nullptr, nullptr};
+      _head = new_node;
+      _tail = new_node;
+    }
+    else if (it._ptr == nullptr)
+    {
+      new_node = new Node< T >{std::move(val), nullptr, _tail};
+      _tail->_next = new_node;
+      _tail = new_node;
+    }
+    else
+    {
+      new_node = new Node< T >{std::move(val), it._ptr, it._ptr->_prev};
+      if (it._ptr->_prev == nullptr)
+      {
+        _head->_prev = new_node;
+        _head = new_node;
+      }
+      else
+      {
+        it._ptr->_prev->_next = new_node;
+        it._ptr->_prev = new_node;
+      }
+    }
+    _size++;
+    return ListIter< T >(new_node, this);
   }
 }
 
