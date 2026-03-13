@@ -1,8 +1,10 @@
 #include <iostream>
+#include <limits>
 #include "bidir_list.hpp"
 
 int main()
 {
+  size_t max_num = std::numeric_limits< size_t >::max();
   using stringListPair = std::pair< std::string, tarasenko::BidirList< size_t > >;
   auto list = tarasenko::BidirList< stringListPair >();
   std::string current_str;
@@ -39,6 +41,11 @@ int main()
   {
     max_size = std::max(max_size, it->second.size());
   }
+  if (max_size == 0)
+  {
+    std::cout << "0\n";
+    return 0;
+  }
 
   using IterSizePair = std::pair< tarasenko::ListIter< size_t >, size_t >;
   auto iter_list = tarasenko::BidirList< IterSizePair >();
@@ -71,7 +78,15 @@ int main()
         {
           std::cout << " " << current_num;
         }
-        *sums_it += current_num;
+        if (max_num - current_num >= *sums_it)
+        {
+          *sums_it += current_num;
+        }
+        else
+        {
+          std::cerr << "\n" << "addition overflow\n";
+          return 1;
+        }
         ++((*it).first);
       }
     }
@@ -86,4 +101,5 @@ int main()
   {
     std::cout << " " << *sums_it;
   }
+  std::cout << "\n";
 }
