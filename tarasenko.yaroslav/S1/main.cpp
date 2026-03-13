@@ -25,9 +25,10 @@ int main()
     return 0;
   }
 
-  auto temp = list.begin()->first;
-  std::cout << temp;
-  for (auto it = ++(list.begin()); it != list.end(); ++it)
+  auto it = list.begin();
+  std::cout << it->first;
+  ++it;
+  for (; it != list.end(); ++it)
   {
     std::cout << " " << it->first;
   }
@@ -46,6 +47,13 @@ int main()
     iter_list.push_back(std::make_pair(it->second.begin(), it->second.size()));
   }
 
+  auto sums_list = tarasenko::BidirList< size_t >();
+  for (size_t i = 0; i < max_size; ++i)
+  {
+    sums_list.push_back(0);
+  }
+
+  auto sums_it = sums_list.begin();
   for (size_t i = 0; i < max_size; ++i)
   {
     bool flag = true;
@@ -53,19 +61,29 @@ int main()
     {
       if ((*it).second > i)
       {
+        size_t current_num = *((*it).first);
         if (flag)
         {
-          std::cout << *((*it).first);
-          ++((*it).first);
+          std::cout << current_num;
           flag = false;
         }
         else
         {
-          std::cout << " " << *((*it).first);
-          ++((*it).first);
+          std::cout << " " << current_num;
         }
+        *sums_it += current_num;
+        ++((*it).first);
       }
     }
+    ++sums_it;
     std::cout << "\n";
+  }
+
+  sums_it = sums_list.begin();
+  std::cout << *sums_it;
+  ++sums_it;
+  for (; sums_it != sums_list.end(); ++sums_it)
+  {
+    std::cout << " " << *sums_it;
   }
 }
