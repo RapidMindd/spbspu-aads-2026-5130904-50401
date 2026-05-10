@@ -82,3 +82,48 @@ BOOST_AUTO_TEST_CASE(add_elems_by_same_key)
   BOOST_TEST(table.getSize() == 1);
   BOOST_TEST(table.get(1) == 1);
 }
+
+BOOST_AUTO_TEST_CASE(swap)
+{
+  HTable table1;
+  HTable table2;
+  table1.add(1, 1);
+  table2.add(2, 2);
+  table1.swap(table2);
+  BOOST_TEST(table1.get(2) == 2);
+  BOOST_TEST(table2.get(1) == 1);
+}
+
+BOOST_AUTO_TEST_CASE(copy_constructor)
+{
+  HTable table1;
+  table1.add(1, 1);
+  HTable table2(table1);
+  BOOST_TEST(table2.get(1) == 1);
+}
+
+BOOST_AUTO_TEST_CASE(move_constructor)
+{
+  HTable table1;
+  table1.add(1, 1);
+  HTable table2(std::move(table1));
+  BOOST_TEST(table2.get(1) == 1);
+}
+
+BOOST_AUTO_TEST_CASE(copy_assignment)
+{
+  HTable table1;
+  table1.add(1, 1);
+  HTable table2;
+  table2 = table1;
+  BOOST_TEST(table2.get(1) == 1);
+}
+
+BOOST_AUTO_TEST_CASE(move_assignment)
+{
+  HTable table1;
+  table1.add(1, 1);
+  HTable table2;
+  table2 = std::move(table1);
+  BOOST_TEST(table2.get(1) == 1);
+}
