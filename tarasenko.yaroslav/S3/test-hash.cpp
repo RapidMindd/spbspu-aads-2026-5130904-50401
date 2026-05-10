@@ -8,8 +8,9 @@ using HTable = HashTable< int, int, HmacHash< int >, std::equal_to< int > >;
 
 BOOST_AUTO_TEST_CASE(hash_is_equal_if_key_is_equal)
 {
-  HmacHash< int > hash;
-  BOOST_TEST(hash(67) == hash(67));
+  HmacHash< int > hash1("my_key");
+  HmacHash< int > hash2("my_key");
+  BOOST_TEST(hash1(67) == hash2(67));
 }
 
 BOOST_AUTO_TEST_CASE(hash_is_not_equal_if_key_is_not_equal)

@@ -43,13 +43,23 @@ namespace tarasenko
 
   ht_template
   HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots):
-    table_(slots, Bucket< Key, Value >())
+    table_(slots > 0 ? slots : 1, Bucket< Key, Value >())
   {}
 
   ht_template
   void ht_type::add(const Key& key, const Value& val)
   {
     size_t slot = hash_(key) % table_.getSize();
+    const auto& list = table_[slot];
+    auto it = list.begin();
+    while (it != list.end())
+    {
+      if (equal_(it->first, key))
+      {
+        return;
+      }
+      ++it;
+    }
     table_[slot].push_front({key, val});
     ++size_;
   }

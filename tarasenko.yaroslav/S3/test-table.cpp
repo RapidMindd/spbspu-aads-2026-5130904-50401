@@ -67,3 +67,18 @@ BOOST_AUTO_TEST_CASE(default_template_parameters)
   table.add(1, "hello");
   BOOST_TEST(table.get(1) == "hello");
 }
+
+BOOST_AUTO_TEST_CASE(trying_to_create_empty_table)
+{
+  HTable table(0);
+  BOOST_TEST(table.getCapacity() == 1);
+}
+
+BOOST_AUTO_TEST_CASE(add_elems_by_same_key)
+{
+  HTable table;
+  table.add(1, 1);
+  table.add(1, 2);
+  BOOST_TEST(table.getSize() == 1);
+  BOOST_TEST(table.get(1) == 1);
+}
