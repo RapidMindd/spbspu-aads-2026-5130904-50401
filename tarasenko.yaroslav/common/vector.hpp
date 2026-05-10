@@ -61,7 +61,6 @@ namespace tarasenko
     ~Vector();
     Vector(const Vector&);
     Vector(Vector&&) noexcept;
-    explicit Vector(size_t size);
     explicit Vector(size_t size, const T& init);
     explicit Vector(std::initializer_list< T >);
     Vector& operator=(const Vector&);
@@ -111,6 +110,8 @@ namespace tarasenko
     T* data_;
     size_t size_;
     size_t cap_;
+
+    explicit Vector(size_t size);
   };
 
   template< class T >

@@ -31,15 +31,18 @@ namespace tarasenko
   #define ht_template template< class Key, class Value, class Hash, class Equal >
   #define ht_type HashTable< Key, Value, Hash, Equal >
 
+  template< class Key, class Value >
+  using Bucket = BidirList< std::pair< Key, Value > >;
+
   ht_template
   HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots):
-    table_(slots)
+    table_(slots, Bucket< Key, Value >())
   {}
 
   ht_template
   void ht_type::add(const Key& key, const Value& val)
   {
-    size_t slot = hash_(key) % table_.size();
+    size_t slot = hash_(key) % table_.getSize();
     table_[slot].push_front({key, val});
     ++size_;
   }
@@ -47,8 +50,8 @@ namespace tarasenko
   ht_template
   void ht_type::drop(const Key& key)
   {
-    size_t slot = hash_(key) % table_.size();
-    auto list = table_[slot];
+    size_t slot = hash_(key) % table_.getSize();
+    auto& list = table_[slot];
     auto it = list.begin();
     while (it != list.end())
     {
@@ -65,8 +68,8 @@ namespace tarasenko
   ht_template
   const Value& ht_type::get(const Key& key) const
   {
-    size_t slot = hash_(key) % table_.size();
-    auto list = table_[slot];
+    size_t slot = hash_(key) % table_.getSize();
+    const auto& list = table_[slot];
     auto it = list.begin();
     while (it != list.end())
     {
@@ -82,8 +85,8 @@ namespace tarasenko
   ht_template
   bool ht_type::has(const Key& key) const
   {
-    size_t slot = hash_(key) % table_.size();
-    auto list = table_[slot];
+    size_t slot = hash_(key) % table_.getSize();
+    const auto& list = table_[slot];
     auto it = list.begin();
     while (it != list.end())
     {
@@ -105,7 +108,7 @@ namespace tarasenko
   ht_template
   size_t ht_type::getCapacity() const
   {
-    return table_.size();
+    return table_.getSize();
   }
 
   #undef ht_template
