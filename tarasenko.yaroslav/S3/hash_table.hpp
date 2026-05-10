@@ -63,7 +63,7 @@ namespace tarasenko
     bool operator!=(const HashTableForwardIterator& rhs) const;
 
   private:
-    HashTable< Key, Value, Hash, Equal >* owner_;
+    const HashTable< Key, Value, Hash, Equal >* owner_;
     VecIt< BidirList< std::pair< Key, Value > > > bucketIt_;
     ListIter<std::pair< Key, Value > > listIt_;
 
@@ -72,9 +72,36 @@ namespace tarasenko
       ListIter<std::pair< Key, Value > > listIt);
   };
 
+  template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
+  class HashTableConstForwardIterator
+  {
+    friend class HashTable< Key, Value, Hash, Equal >;
+  public:
+    HashTableConstForwardIterator();
+
+    const std::pair< Key, Value >& operator*() const;
+    const std::pair< Key, Value >* operator->() const;
+
+    HashTableConstForwardIterator& operator++();
+    HashTableConstForwardIterator operator++(int);
+
+    bool operator==(const HashTableConstForwardIterator& rhs) const;
+    bool operator!=(const HashTableConstForwardIterator& rhs) const;
+
+  private:
+    const HashTable< Key, Value, Hash, Equal >* owner_;
+    VecIt< BidirList< std::pair< Key, Value > > > bucketIt_;
+    ListIter<std::pair< Key, Value > > listIt_;
+
+    HashTableConstForwardIterator(HashTable< Key, Value, Hash, Equal >* owner,
+      VecIt< BidirList< std::pair< Key, Value > > > bucketIt,
+      ListConstIter<std::pair< Key, Value > > listIt);
+  };
+
   #define ht_template template< class Key, class Value, class Hash, class Equal >
   #define ht_type HashTable< Key, Value, Hash, Equal >
   #define ht_iterator HashTableForwardIterator< Key, Value, Hash, Equal >
+  #define ht_const_iterator HashTableConstForwardIterator< Key, Value, Hash, Equal >
 
   template< class Key, class Value >
   using Bucket = BidirList< std::pair< Key, Value > >;
@@ -299,6 +326,20 @@ namespace tarasenko
   {
     return ht_iterator(this, table_.end(), ListIter< Pair< Key, Value > >());
   }
+
+  ht_template
+  ht_const_iterator::HashTableConstForwardIterator():
+    owner_(nullptr)
+  {}
+
+  ht_template
+  ht_const_iterator::HashTableConstForwardIterator(ht_type* owner,
+    VecIt< BidirList< std::pair< Key, Value > > > bucketIt,
+    ListConstIter<std::pair< Key, Value > > listIt):
+    owner_(owner),
+    bucketIt_(bucketIt),
+    listIt_(listIt)
+  {}
 
   #undef ht_template
   #undef ht_type

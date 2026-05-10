@@ -55,6 +55,49 @@ namespace tarasenko
   VecIt< T > operator+(long long offset, const VecIt< T >& it) noexcept;
 
   template< class T >
+  struct VecConstIt
+  {
+    friend struct Vector< T >;
+
+    VecConstIt() noexcept;
+
+    const T& operator*() const;
+    const T* operator->() const;
+
+    const T& operator[](long long index) const;
+
+    VecConstIt& operator++();
+    VecConstIt operator++(int);
+
+    VecConstIt& operator--();
+    VecConstIt operator--(int);
+
+    VecConstIt& operator+=(long long offset);
+    VecConstIt& operator-=(long long offset);
+
+    VecConstIt operator+(long long offset) const noexcept;
+    VecConstIt operator-(long long offset) const noexcept;
+
+    long long operator-(const VecConstIt& another) const noexcept;
+
+    bool operator==(const VecConstIt& another) const noexcept;
+    bool operator!=(const VecConstIt& another) const noexcept;
+    bool operator>(const VecConstIt& another) const noexcept;
+    bool operator<(const VecConstIt& another) const noexcept;
+    bool operator>=(const VecConstIt& another) const noexcept;
+    bool operator<=(const VecConstIt& another) const noexcept;
+  private:
+    Vector< T >* owner_;
+    size_t index_;
+
+    explicit VecConstIt(Vector< T >* owner, size_t index) noexcept;
+    explicit VecConstIt(Vector< T >* owner, T* ptr) noexcept;
+  };
+
+  template< class T >
+  VecConstIt< T > operator+(long long offset, const VecConstIt< T >& it) noexcept;
+
+  template< class T >
   struct Vector
   {
 
@@ -108,6 +151,12 @@ namespace tarasenko
 
     VecIt< T > begin() noexcept;
     VecIt< T > end() noexcept;
+
+    VecConstIt< T > begin() const noexcept;
+    VecConstIt< T > end() const noexcept;
+
+    VecConstIt< T > cbegin() const noexcept;
+    VecConstIt< T > cend() const noexcept;
 
   private:
     T* data_;
@@ -793,6 +842,164 @@ void tarasenko::Vector< T >::pushBackRange(IT begin, size_t c)
     ++copy.size_;
   }
   swap(copy);
+}
+
+template< class T >
+tarasenko::VecConstIt< T >::VecConstIt() noexcept:
+  owner_(nullptr),
+  index_(0)
+{}
+
+template< class T >
+tarasenko::VecConstIt< T >::VecConstIt(tarasenko::Vector< T >* owner, size_t index) noexcept:
+  owner_(owner),
+  index_(index)
+{}
+
+template< class T >
+tarasenko::VecConstIt< T >::VecConstIt(tarasenko::Vector< T >* owner, T* ptr) noexcept:
+  owner_(owner),
+  index_(ptr - owner->data_)
+{}
+
+template< class T >
+tarasenko::VecConstIt< T >& tarasenko::VecConstIt< T >::operator++()
+{
+  ++index_;
+  return *this;
+}
+
+template< class T >
+tarasenko::VecConstIt< T > tarasenko::VecConstIt< T >::operator++(int)
+{
+  auto temp = *this;
+  ++index_;
+  return temp;
+}
+
+template< class T >
+tarasenko::VecConstIt< T >& tarasenko::VecConstIt< T >::operator--()
+{
+  --index_;
+  return *this;
+}
+
+template< class T >
+tarasenko::VecConstIt< T > tarasenko::VecConstIt< T >::operator--(int)
+{
+  auto temp = *this;
+  --index_;
+  return temp;
+}
+
+template< class T >
+const T& tarasenko::VecConstIt< T >::operator*() const
+{
+  return (*owner_)[index_];
+}
+
+template< class T >
+const T* tarasenko::VecConstIt< T >::operator->() const
+{
+  return &(**this);
+}
+
+template< class T >
+bool tarasenko::VecConstIt< T >::operator==(const VecConstIt< T >& another) const noexcept
+{
+  return (owner_ == another.owner_) && (index_ == another.index_);
+}
+
+template< class T >
+bool tarasenko::VecConstIt< T >::operator!=(const VecConstIt< T >& another) const noexcept
+{
+  return !(*this == another);
+}
+
+template< class T >
+bool tarasenko::VecConstIt< T >::operator>(const VecConstIt< T >& another) const noexcept
+{
+  return index_ > another.index_;
+}
+
+template< class T >
+bool tarasenko::VecConstIt< T >::operator<(const VecConstIt< T >& another) const noexcept
+{
+  return index_ < another.index_;
+}
+
+template< class T >
+bool tarasenko::VecConstIt< T >::operator>=(const VecConstIt< T >& another) const noexcept
+{
+  return !(index_ < another.index_);
+}
+
+template< class T >
+bool tarasenko::VecConstIt< T >::operator<=(const VecConstIt< T >& another) const noexcept
+{
+  return !(index_ > another.index_);
+}
+
+template< class T >
+tarasenko::VecConstIt< T > tarasenko::VecConstIt< T >::operator+(long long offset) const noexcept
+{
+  return VecIt< T >(owner_, index_ + offset);
+}
+
+template< class T >
+tarasenko::VecConstIt< T > tarasenko::VecConstIt< T >::operator-(long long offset) const noexcept
+{
+  return VecIt< T >(owner_, index_ - offset);
+}
+
+template< class T >
+long long tarasenko::VecConstIt< T >::operator-(const VecConstIt< T >& another) const noexcept
+{
+  return static_cast< long long >(index_) - static_cast< long long >(another.index_);
+}
+
+template< class T >
+tarasenko::VecConstIt< T >& tarasenko::VecConstIt< T >::operator+=(long long offset)
+{
+  index_ += offset;
+  return *this;
+}
+
+template< class T >
+tarasenko::VecConstIt< T >& tarasenko::VecConstIt< T >::operator-=(long long offset)
+{
+  index_ -= offset;
+  return *this;
+}
+
+template< class T >
+tarasenko::VecConstIt< T > tarasenko::operator+(long long offset, const tarasenko::VecConstIt< T >& it) noexcept
+{
+  return it + offset;
+}
+
+template< class T >
+tarasenko::VecConstIt< T > tarasenko::Vector< T >::begin() const noexcept
+{
+  return tarasenko::VecConstIt< T >(this, static_cast< size_t >(0));
+}
+
+template< class T >
+tarasenko::VecConstIt< T > tarasenko::Vector< T >::end() const noexcept
+{
+  return tarasenko::VecConstIt< T >(this, static_cast< size_t >(size_));
+}
+
+template< class T >
+tarasenko::VecConstIt< T > tarasenko::Vector< T >::cbegin() const noexcept
+{
+  return tarasenko::VecConstIt< T >(this, static_cast< size_t >(0));
+}
+
+template< class T >
+tarasenko::VecConstIt< T > tarasenko::Vector< T >::cend() const noexcept
+{
+  return tarasenko::VecConstIt< T >(this, static_cast< size_t >(size_));
 }
 
 // строгая гарантия 2 инсерта + 2 эрейза
