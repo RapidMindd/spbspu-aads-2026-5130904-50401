@@ -132,13 +132,52 @@ BOOST_AUTO_TEST_CASE(begin)
 {
   HTable table;
   table.add(1, 2);
-  auto it = table.begin();
-  BOOST_TEST(it->first == 1);
-  BOOST_TEST(it->second == 2);
+  BOOST_CHECK(table.begin() != table.end());
 }
 
 BOOST_AUTO_TEST_CASE(begin_empty)
 {
   HTable table;
   BOOST_CHECK(table.begin() == table.end());
+}
+
+BOOST_AUTO_TEST_CASE(dereference)
+{
+  HTable table;
+  table.add(1, 2);
+  auto it = table.begin();
+  BOOST_CHECK(*it == std::make_pair(1, 2));
+  BOOST_TEST(it->first == 1);
+  BOOST_TEST(it->second == 2);
+}
+
+BOOST_AUTO_TEST_CASE(pre_increment)
+{
+  HTable table;
+  table.add(1, 2);
+  auto it = table.begin();
+  BOOST_CHECK(++it == table.end());
+}
+
+BOOST_AUTO_TEST_CASE(post_increment)
+{
+  HTable table;
+  table.add(1, 2);
+  auto it = table.begin();
+  BOOST_CHECK(it++ == table.begin());
+  BOOST_CHECK(it == table.end());
+}
+
+BOOST_AUTO_TEST_CASE(cycle_by_iterators)
+{
+  HTable table;
+  table.add(1, 10);
+  table.add(2, 20);
+  table.add(3, 30);
+  int i = 0;
+  for (auto it = table.begin(); it != table.end(); ++it, ++i)
+  {
+    BOOST_TEST(it->second == it->first * 10);
+  }
+  BOOST_TEST(i == 3);
 }
