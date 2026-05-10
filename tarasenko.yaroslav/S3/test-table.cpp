@@ -4,7 +4,7 @@
 
 using namespace tarasenko;
 
-using HTable = HashTable< int, int, std::hash< int >, std::equal_to< int > >;
+using HTable = HashTable< int, int >;
 
 BOOST_AUTO_TEST_CASE(default_constructor)
 {
@@ -126,4 +126,19 @@ BOOST_AUTO_TEST_CASE(move_assignment)
   HTable table2;
   table2 = std::move(table1);
   BOOST_TEST(table2.get(1) == 1);
+}
+
+BOOST_AUTO_TEST_CASE(begin)
+{
+  HTable table;
+  table.add(1, 2);
+  auto it = table.begin();
+  BOOST_TEST(it->first == 1);
+  BOOST_TEST(it->second == 2);
+}
+
+BOOST_AUTO_TEST_CASE(begin_empty)
+{
+  HTable table;
+  BOOST_CHECK(table.begin() == table.end());
 }

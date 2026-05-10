@@ -14,9 +14,9 @@ namespace tarasenko
   template< class T >
   struct VecIt
   {
+    friend struct Vector< T >;
+
     VecIt() noexcept;
-    explicit VecIt(Vector< T >* owner, size_t index) noexcept;
-    explicit VecIt(Vector< T >* owner, T* ptr) noexcept;
 
     T& operator*() const;
     T* operator->() const;
@@ -46,6 +46,9 @@ namespace tarasenko
   private:
     Vector< T >* owner_;
     size_t index_;
+
+    explicit VecIt(Vector< T >* owner, size_t index) noexcept;
+    explicit VecIt(Vector< T >* owner, T* ptr) noexcept;
   };
 
   template< class T >

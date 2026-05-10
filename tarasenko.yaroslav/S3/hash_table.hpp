@@ -32,6 +32,9 @@ namespace tarasenko
 
     void swap(HashTable< Key, Value, Hash, Equal >& rhs) noexcept;
 
+    HashTableForwardIterator< Key, Value, Hash, Equal > begin();
+    HashTableForwardIterator< Key, Value, Hash, Equal > end();
+
   private:
     Vector< BidirList< std::pair< Key, Value > > > table_;
     size_t size_ = 0;
@@ -46,7 +49,10 @@ namespace tarasenko
   template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
   class HashTableForwardIterator
   {
+    friend class HashTable< Key, Value, Hash, Equal >;
   public:
+    HashTableForwardIterator();
+
     std::pair< Key, Value >& operator*() const;
     std::pair< Key, Value >* operator->() const;
 
@@ -60,6 +66,10 @@ namespace tarasenko
     HashTable< Key, Value, Hash, Equal >* owner_;
     VecIt< BidirList< std::pair< Key, Value > > > bucketIt_;
     ListIter<std::pair< Key, Value > > listIt_;
+
+    HashTableForwardIterator(HashTable< Key, Value, Hash, Equal >* owner,
+      VecIt< BidirList< std::pair< Key, Value > > > bucketIt,
+      ListIter<std::pair< Key, Value > > listIt);
   };
 
   #define ht_template template< class Key, class Value, class Hash, class Equal >
@@ -252,6 +262,42 @@ namespace tarasenko
   bool ht_iterator::operator!=(const ht_iterator& rhs) const
   {
     return !(*this == rhs);
+  }
+
+  ht_template
+  ht_iterator::HashTableForwardIterator():
+    owner_(nullptr)
+  {}
+
+  ht_template
+  ht_iterator::HashTableForwardIterator(ht_type* owner,
+    VecIt< BidirList< std::pair< Key, Value > > > bucketIt,
+    ListIter<std::pair< Key, Value > > listIt):
+    owner_(owner),
+    bucketIt_(bucketIt),
+    listIt_(listIt)
+  {}
+
+  ht_template
+  ht_iterator ht_type::begin()
+  {
+    auto bucketIt = table_.begin();
+    while (bucketIt != table_.end() && bucketIt->empty())
+    {
+      ++bucketIt;
+    }
+    if (bucketIt == table_.end())
+    {
+      return end();
+    }
+
+    return ht_iterator(this, bucketIt, bucketIt->begin());
+  }
+
+  ht_template
+  ht_iterator ht_type::end()
+  {
+    return ht_iterator(this, table_.end(), ListIter< Pair< Key, Value > >());
   }
 
   #undef ht_template
