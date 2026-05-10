@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <string>
 #include "hash_table.hpp"
 
 using namespace tarasenko;
@@ -23,7 +24,8 @@ BOOST_AUTO_TEST_CASE(drop)
 {
   HTable table;
   table.add(1, 1);
-  table.drop(1);
+  BOOST_TEST(!table.drop(2));
+  BOOST_TEST(table.drop(1));
   BOOST_TEST(table.getSize() == 0);
 }
 
@@ -47,4 +49,21 @@ BOOST_AUTO_TEST_CASE(has)
   table.add(1, 1);
   BOOST_TEST(table.has(1));
   BOOST_TEST(!table.has(2));
+}
+
+BOOST_AUTO_TEST_CASE(rehash)
+{
+  HTable table;
+  table.add(1, 1);
+  table.rehash(128);
+  BOOST_TEST(table.getCapacity() == 128);
+  BOOST_TEST(table.getSize() == 1);
+  BOOST_TEST(table.has(1));
+}
+
+BOOST_AUTO_TEST_CASE(default_template_parameters)
+{
+  HashTable< int, std::string > table;
+  table.add(1, "hello");
+  BOOST_TEST(table.get(1) == "hello");
 }
