@@ -87,11 +87,11 @@ namespace tarasenko
     bool operator>=(const VecConstIt& another) const noexcept;
     bool operator<=(const VecConstIt& another) const noexcept;
   private:
-    Vector< T >* owner_;
+    const Vector< T >* owner_;
     size_t index_;
 
-    explicit VecConstIt(Vector< T >* owner, size_t index) noexcept;
-    explicit VecConstIt(Vector< T >* owner, T* ptr) noexcept;
+    explicit VecConstIt(const Vector< T >* owner, size_t index) noexcept;
+    explicit VecConstIt(const Vector< T >* owner, T* ptr) noexcept;
   };
 
   template< class T >
@@ -851,13 +851,13 @@ tarasenko::VecConstIt< T >::VecConstIt() noexcept:
 {}
 
 template< class T >
-tarasenko::VecConstIt< T >::VecConstIt(tarasenko::Vector< T >* owner, size_t index) noexcept:
+tarasenko::VecConstIt< T >::VecConstIt(const tarasenko::Vector< T >* owner, size_t index) noexcept:
   owner_(owner),
   index_(index)
 {}
 
 template< class T >
-tarasenko::VecConstIt< T >::VecConstIt(tarasenko::Vector< T >* owner, T* ptr) noexcept:
+tarasenko::VecConstIt< T >::VecConstIt(const tarasenko::Vector< T >* owner, T* ptr) noexcept:
   owner_(owner),
   index_(ptr - owner->data_)
 {}

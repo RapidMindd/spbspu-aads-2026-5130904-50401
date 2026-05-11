@@ -181,3 +181,19 @@ BOOST_AUTO_TEST_CASE(cycle_by_iterators)
   }
   BOOST_TEST(i == 3);
 }
+
+BOOST_AUTO_TEST_CASE(comparison_operator_for_table)
+{
+  HTable table1;
+  HTable table2;
+  for (int i = 0; i < 10; ++i)
+  {
+    table1.add(i, i * 67);
+    table2.add(i, i * 67);
+  }
+  BOOST_CHECK(table1 == table2);
+  table2.drop(3);
+  BOOST_CHECK(table1 != table2);
+  table2.add(10, 10 * 67);
+  BOOST_CHECK(table1 != table2);
+}

@@ -14,10 +14,14 @@ namespace tarasenko
   template< class Key, class Value, class Hash, class Equal >
   class HashTableForwardIterator;
 
+  template< class Key, class Value, class Hash, class Equal >
+  class HashTableConstForwardIterator;
+
   template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
   class HashTable
   {
     friend class HashTableForwardIterator< Key, Value, Hash, Equal >;
+    friend class HashTableConstForwardIterator< Key, Value, Hash, Equal >;
   public:
     HashTable(size_t slots = 64);
 
@@ -35,6 +39,12 @@ namespace tarasenko
     HashTableForwardIterator< Key, Value, Hash, Equal > begin();
     HashTableForwardIterator< Key, Value, Hash, Equal > end();
 
+    HashTableConstForwardIterator< Key, Value, Hash, Equal > begin() const;
+    HashTableConstForwardIterator< Key, Value, Hash, Equal > end() const;
+
+    HashTableConstForwardIterator< Key, Value, Hash, Equal > cbegin() const;
+    HashTableConstForwardIterator< Key, Value, Hash, Equal > cend() const;
+
   private:
     Vector< BidirList< std::pair< Key, Value > > > table_;
     size_t size_ = 0;
@@ -44,6 +54,10 @@ namespace tarasenko
 
   template< class Key, class Value, class Hash, class Equal >
   bool operator==(const HashTable< Key, Value, Hash, Equal >& lhs,
+    const HashTable< Key, Value, Hash, Equal >& rhs);
+
+  template< class Key, class Value, class Hash, class Equal >
+  bool operator!=(const HashTable< Key, Value, Hash, Equal >& lhs,
     const HashTable< Key, Value, Hash, Equal >& rhs);
 
   template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
@@ -63,7 +77,7 @@ namespace tarasenko
     bool operator!=(const HashTableForwardIterator& rhs) const;
 
   private:
-    const HashTable< Key, Value, Hash, Equal >* owner_;
+    HashTable< Key, Value, Hash, Equal >* owner_;
     VecIt< BidirList< std::pair< Key, Value > > > bucketIt_;
     ListIter<std::pair< Key, Value > > listIt_;
 
@@ -90,11 +104,11 @@ namespace tarasenko
 
   private:
     const HashTable< Key, Value, Hash, Equal >* owner_;
-    VecIt< BidirList< std::pair< Key, Value > > > bucketIt_;
-    ListIter<std::pair< Key, Value > > listIt_;
+    VecConstIt< BidirList< std::pair< Key, Value > > > bucketIt_;
+    ListConstIter<std::pair< Key, Value > > listIt_;
 
-    HashTableConstForwardIterator(HashTable< Key, Value, Hash, Equal >* owner,
-      VecIt< BidirList< std::pair< Key, Value > > > bucketIt,
+    HashTableConstForwardIterator(const HashTable< Key, Value, Hash, Equal >* owner,
+      VecConstIt< BidirList< std::pair< Key, Value > > > bucketIt,
       ListConstIter<std::pair< Key, Value > > listIt);
   };
 
@@ -229,7 +243,27 @@ namespace tarasenko
     {
       return false;
     }
+    try
+    {
+      for (auto it = lhs.begin(); it != lhs.end(); ++it)
+      {
+        if (rhs.get(it->first) != it->second)
+        {
+          return false;
+        }
+      }
+    }
+    catch (...)
+    {
+      return false;
+    }
     return true;
+  }
+
+  ht_template
+  bool operator!=(const ht_type& lhs, const ht_type& rhs)
+  {
+    return !(lhs == rhs);
   }
 
   ht_template
@@ -333,13 +367,106 @@ namespace tarasenko
   {}
 
   ht_template
-  ht_const_iterator::HashTableConstForwardIterator(ht_type* owner,
-    VecIt< BidirList< std::pair< Key, Value > > > bucketIt,
+  ht_const_iterator::HashTableConstForwardIterator(const ht_type* owner,
+    VecConstIt< BidirList< std::pair< Key, Value > > > bucketIt,
     ListConstIter<std::pair< Key, Value > > listIt):
     owner_(owner),
     bucketIt_(bucketIt),
     listIt_(listIt)
   {}
+
+  ht_template
+  const Pair< Key, Value >& ht_const_iterator::operator*() const
+  {
+    return *listIt_;
+  }
+
+  ht_template
+  const Pair< Key, Value >* ht_const_iterator::operator->() const
+  {
+    return &(**this);
+  }
+
+  ht_template
+  ht_const_iterator& ht_const_iterator::operator++()
+  {
+    ++listIt_;
+    if (listIt_ == bucketIt_->end())
+    {
+      ++bucketIt_;
+      while (bucketIt_ != owner_->table_.end() && bucketIt_->empty())
+      {
+        ++bucketIt_;
+      }
+      if (bucketIt_ != owner_->table_.end())
+      {
+        listIt_ = bucketIt_->begin();
+      }
+    }
+    return *this;
+  }
+
+  ht_template
+  ht_const_iterator ht_const_iterator::operator++(int)
+  {
+    ht_const_iterator copy = *this;
+    ++(*this);
+    return copy;
+  }
+
+  ht_template
+  bool ht_const_iterator::operator==(const ht_const_iterator& rhs) const
+  {
+    if (owner_ != rhs.owner_ || bucketIt_ != rhs.bucketIt_)
+    {
+      return false;
+    }
+    if (bucketIt_ == owner_->table_.end())
+    {
+      return true;
+    }
+    return listIt_ == rhs.listIt_;
+  }
+
+  ht_template
+  bool ht_const_iterator::operator!=(const ht_const_iterator& rhs) const
+  {
+    return !(*this == rhs);
+  }
+
+  ht_template
+  ht_const_iterator ht_type::cbegin() const
+  {
+    auto bucketIt = table_.cbegin();
+    while (bucketIt != table_.cend() && bucketIt->empty())
+    {
+      ++bucketIt;
+    }
+    if (bucketIt == table_.cend())
+    {
+      return cend();
+    }
+
+    return ht_const_iterator(this, bucketIt, bucketIt->cbegin());
+  }
+
+  ht_template
+  ht_const_iterator ht_type::cend() const
+  {
+    return ht_const_iterator(this, table_.cend(), ListConstIter< Pair< Key, Value > >());
+  }
+
+  ht_template
+  ht_const_iterator ht_type::begin() const
+  {
+    return cbegin();
+  }
+
+  ht_template
+  ht_const_iterator ht_type::end() const
+  {
+    return cend();
+  }
 
   #undef ht_template
   #undef ht_type
