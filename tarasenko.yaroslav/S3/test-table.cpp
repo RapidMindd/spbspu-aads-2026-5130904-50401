@@ -1,6 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include <string>
 #include "hash_table.hpp"
+#include "hmac_hash.hpp"
 
 using namespace tarasenko;
 
@@ -184,8 +185,10 @@ BOOST_AUTO_TEST_CASE(cycle_by_iterators)
 
 BOOST_AUTO_TEST_CASE(comparison_operator_for_table)
 {
-  HTable table1;
-  HTable table2;
+  HmacHash< int > hash1("some_key");
+  HmacHash< int > hash2("another_key");
+  HTable table1(64, hash1);
+  HTable table2(64, hash2);
   for (int i = 0; i < 10; ++i)
   {
     table1.add(i, i * 67);
@@ -196,4 +199,58 @@ BOOST_AUTO_TEST_CASE(comparison_operator_for_table)
   BOOST_CHECK(table1 != table2);
   table2.add(10, 10 * 67);
   BOOST_CHECK(table1 != table2);
+}
+
+BOOST_AUTO_TEST_CASE(cbegin)
+{
+  HTable table;
+  table.add(1, 2);
+  BOOST_CHECK(table.cbegin() != table.cend());
+}
+
+BOOST_AUTO_TEST_CASE(cbegin_empty)
+{
+  HTable table;
+  BOOST_CHECK(table.cbegin() == table.cend());
+}
+
+BOOST_AUTO_TEST_CASE(cdereference)
+{
+  HTable table;
+  table.add(1, 2);
+  auto it = table.cbegin();
+  BOOST_CHECK(*it == std::make_pair(1, 2));
+  BOOST_TEST(it->first == 1);
+  BOOST_TEST(it->second == 2);
+}
+
+BOOST_AUTO_TEST_CASE(cpre_increment)
+{
+  HTable table;
+  table.add(1, 2);
+  auto it = table.cbegin();
+  BOOST_CHECK(++it == table.cend());
+}
+
+BOOST_AUTO_TEST_CASE(cpost_increment)
+{
+  HTable table;
+  table.add(1, 2);
+  auto it = table.cbegin();
+  BOOST_CHECK(it++ == table.cbegin());
+  BOOST_CHECK(it == table.cend());
+}
+
+BOOST_AUTO_TEST_CASE(ccycle_by_iterators)
+{
+  HTable table;
+  table.add(1, 10);
+  table.add(2, 20);
+  table.add(3, 30);
+  int i = 0;
+  for (auto it = table.cbegin(); it != table.cend(); ++it, ++i)
+  {
+    BOOST_TEST(it->second == it->first * 10);
+  }
+  BOOST_TEST(i == 3);
 }

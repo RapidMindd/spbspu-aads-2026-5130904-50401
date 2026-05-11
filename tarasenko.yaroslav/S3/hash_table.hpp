@@ -23,7 +23,7 @@ namespace tarasenko
     friend class HashTableForwardIterator< Key, Value, Hash, Equal >;
     friend class HashTableConstForwardIterator< Key, Value, Hash, Equal >;
   public:
-    HashTable(size_t slots = 64);
+    HashTable(size_t slots = 64, const Hash& hash = Hash(), const Equal& equal = Equal());
 
     void add(const Key& key, const Value& val);
     bool drop(const Key& key);
@@ -123,8 +123,10 @@ namespace tarasenko
   using Pair = std::pair< Key, Value >;
 
   ht_template
-  HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots):
-    table_(slots > 0 ? slots : 1, Bucket< Key, Value >())
+  HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots, const Hash& hash, const Equal& equal):
+    table_(slots > 0 ? slots : 1, Bucket< Key, Value >()),
+    hash_(hash),
+    equal_(equal)
   {}
 
   ht_template
