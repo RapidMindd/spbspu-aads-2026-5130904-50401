@@ -8,6 +8,7 @@
 #include "bidir_list.hpp"
 #include "vector.hpp"
 #include "hmac_hash.hpp"
+#include "equal_to.hpp"
 
 namespace tarasenko
 {
@@ -17,7 +18,7 @@ namespace tarasenko
   template< class Key, class Value, class Hash, class Equal >
   class HashTableConstForwardIterator;
 
-  template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
+  template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = EqualTo< Key > >
   class HashTable
   {
     friend class HashTableForwardIterator< Key, Value, Hash, Equal >;
@@ -134,14 +135,12 @@ namespace tarasenko
   {
     size_t slot = hash_(key) % table_.getSize();
     const auto& list = table_[slot];
-    auto it = list.begin();
-    while (it != list.end())
+    for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
       {
         return;
       }
-      ++it;
     }
     table_[slot].push_front({key, val});
     ++size_;
@@ -152,8 +151,7 @@ namespace tarasenko
   {
     size_t slot = hash_(key) % table_.getSize();
     auto& list = table_[slot];
-    auto it = list.begin();
-    while (it != list.end())
+    for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
       {
@@ -161,7 +159,6 @@ namespace tarasenko
         --size_;
         return true;
       }
-      ++it;
     }
     return false;
   }
@@ -171,14 +168,12 @@ namespace tarasenko
   {
     size_t slot = hash_(key) % table_.getSize();
     const auto& list = table_[slot];
-    auto it = list.begin();
-    while (it != list.end())
+    for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
       {
         return it->second;
       }
-      ++it;
     }
     throw std::runtime_error("Key not found");
   }
@@ -188,14 +183,12 @@ namespace tarasenko
   {
     size_t slot = hash_(key) % table_.getSize();
     const auto& list = table_[slot];
-    auto it = list.begin();
-    while (it != list.end())
+    for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
       {
         return true;
       }
-      ++it;
     }
     return false;
   }
@@ -216,15 +209,9 @@ namespace tarasenko
   void ht_type::rehash(size_t slots)
   {
     ht_type copy(slots);
-    for (size_t i = 0; i < getCapacity(); ++i)
+    for (auto it = begin(); it != end(); ++it)
     {
-      const auto& list = table_[i];
-      auto it = list.begin();
-      while (it != list.end())
-      {
-        copy.add(it->first, it->second);
-        ++it;
-      }
+      copy.add(it->first, it->second);
     }
     swap(copy);
   }
