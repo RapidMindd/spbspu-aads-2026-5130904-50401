@@ -7,6 +7,16 @@ using namespace tarasenko;
 
 using HTable = HashTable< int, int >;
 
+struct ConstHash
+{
+  size_t operator()(int) const
+  {
+    return 777;
+  }
+};
+
+using CollisionTable = HashTable< int, int, ConstHash >;
+
 BOOST_AUTO_TEST_CASE(default_constructor)
 {
   HTable table;
@@ -42,6 +52,9 @@ BOOST_AUTO_TEST_CASE(get_empty)
 {
   HTable table;
   BOOST_CHECK_THROW(table.get(1), std::runtime_error);
+  table.add(1, 1);
+  table.drop(1);
+  BOOST_CHECK_THROW(table.get(1), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(has)
@@ -60,6 +73,24 @@ BOOST_AUTO_TEST_CASE(rehash)
   BOOST_TEST(table.getCapacity() == 128);
   BOOST_TEST(table.getSize() == 1);
   BOOST_TEST(table.has(1));
+}
+
+BOOST_AUTO_TEST_CASE(rehash_many_elems)
+{
+  HTable table(2);
+  for (int i = 0; i < 20; ++i)
+  {
+    table.add(i, i * 5);
+  }
+  HTable copy = table;
+  table.rehash(77);
+  BOOST_TEST(table.getCapacity() == 77);
+  BOOST_TEST(table.getSize() == 20);
+  for (int i = 0; i < 20; ++i)
+  {
+    BOOST_TEST(table.get(i) == i * 5);
+  }
+  BOOST_CHECK(table == copy);
 }
 
 BOOST_AUTO_TEST_CASE(default_template_parameters)
@@ -82,6 +113,31 @@ BOOST_AUTO_TEST_CASE(add_elems_by_same_key)
   table.add(1, 2);
   BOOST_TEST(table.getSize() == 1);
   BOOST_TEST(table.get(1) == 1);
+}
+
+BOOST_AUTO_TEST_CASE(collision_add_and_get)
+{
+  CollisionTable table;
+  table.add(1, 10);
+  table.add(2, 20);
+  table.add(3, 30);
+  BOOST_TEST(table.getSize() == 3);
+  BOOST_TEST(table.get(1) == 10);
+  BOOST_TEST(table.get(2) == 20);
+  BOOST_TEST(table.get(3) == 30);
+}
+
+BOOST_AUTO_TEST_CASE(collision_drop)
+{
+  CollisionTable table;
+  table.add(1, 10);
+  table.add(2, 20);
+  table.add(3, 30);
+  BOOST_TEST(table.drop(2));
+  BOOST_TEST(table.getSize() == 2);
+  BOOST_TEST(!table.has(2));
+  BOOST_TEST(table.get(1) == 10);
+  BOOST_TEST(table.get(3) == 30);
 }
 
 BOOST_AUTO_TEST_CASE(swap)
