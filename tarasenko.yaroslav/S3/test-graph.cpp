@@ -48,9 +48,18 @@ BOOST_AUTO_TEST_CASE(cut)
   graph.addVertex("a");
   graph.addVertex("b");
   graph.bind("a", "b", 1);
-  BOOST_TEST(!graph.cut("a", "b", 2));
-  BOOST_TEST(graph.cut("a", "b", 1));
-  BOOST_TEST(!graph.cut("a", "b", 1));
+  BOOST_CHECK_THROW(graph.cut("a", "c", 1), std::runtime_error);
+  BOOST_CHECK_THROW(graph.cut("a", "b", 2), std::runtime_error);
+  BOOST_CHECK_NO_THROW(graph.cut("a", "b", 1));
+  BOOST_CHECK_THROW(graph.cut("a", "b", 1), std::runtime_error);
+}
+
+BOOST_AUTO_TEST_CASE(get_edges_without_vertex)
+{
+  Graph graph;
+  graph.addVertex("a");
+  BOOST_CHECK_THROW(graph.getOutbound("b"), std::runtime_error);
+  BOOST_CHECK_THROW(graph.getInbound("b"), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(get_vertexes)
@@ -76,6 +85,7 @@ BOOST_AUTO_TEST_CASE(extract)
   BOOST_CHECK(extracted.getOutbound("a") == outbound_a);
   BOOST_CHECK(extracted.getInbound("b") == inbound_b);
   BOOST_CHECK(extracted.getOutbound("b").getSize() == 0);
+  BOOST_CHECK_THROW(graph.extract(Vector< std::string >{"a", "d"}), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(merge_graphs)

@@ -23,7 +23,7 @@ namespace tarasenko
     bool hasVertex(const std::string& name) const;
 
     void bind(const std::string& from, const std::string& to, unsigned int weight);
-    bool cut(const std::string& from, const std::string& to, unsigned int weight);
+    void cut(const std::string& from, const std::string& to, unsigned int weight);
 
     Vector< std::string > getVertexes() const;
     Vector< EdgeInfo > getOutbound(const std::string& vertex) const;

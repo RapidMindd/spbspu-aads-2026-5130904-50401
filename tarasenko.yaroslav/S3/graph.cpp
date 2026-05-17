@@ -1,4 +1,5 @@
 #include "graph.hpp"
+#include <stdexcept>
 
 namespace tarasenko
 {
@@ -44,17 +45,17 @@ namespace tarasenko
     vertexes_.swap(rhs.vertexes_);
   }
 
-  bool Graph::cut(const std::string& from, const std::string& to, unsigned int weight)
+  void Graph::cut(const std::string& from, const std::string& to, unsigned int weight)
   {
     if (!hasVertex(from) || !hasVertex(to))
     {
-      return false;
+      throw std::runtime_error("Vertex not found");
     }
 
     std::pair< std::string, std::string > edge(from, to);
     if (!edges_.has(edge))
     {
-      return false;
+      throw std::runtime_error("Edge not found");
     }
 
     Graph copy = *this;
@@ -71,11 +72,11 @@ namespace tarasenko
           copy.edges_.add(edge, weights);
         }
         swap(copy);
-        return true;
+        return;
       }
     }
 
-    return false;
+    throw std::runtime_error("Weight not found");
   }
 
   Vector< std::string > Graph::getVertexes() const
@@ -103,6 +104,11 @@ namespace tarasenko
 
   Vector< EdgeInfo > Graph::getOutbound(const std::string& vertex) const
   {
+    if (!hasVertex(vertex))
+    {
+      throw std::runtime_error("Vertex not found");
+    }
+
     Vector< EdgeInfo > result;
     for (auto it = edges_.begin(); it != edges_.end(); ++it)
     {
@@ -117,6 +123,11 @@ namespace tarasenko
 
   Vector< EdgeInfo > Graph::getInbound(const std::string& vertex) const
   {
+    if (!hasVertex(vertex))
+    {
+      throw std::runtime_error("Vertex not found");
+    }
+
     Vector< EdgeInfo > result;
     for (auto it = edges_.begin(); it != edges_.end(); ++it)
     {
@@ -136,6 +147,10 @@ namespace tarasenko
 
     for (auto it = vertexes.begin(); it != vertexes.end(); ++it)
     {
+      if (!hasVertex(*it))
+      {
+        throw std::runtime_error("Vertex not found");
+      }
       selected.add(*it, true);
       result.addVertex(*it);
     }
