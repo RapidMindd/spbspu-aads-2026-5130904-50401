@@ -211,7 +211,7 @@ int main(int argc, char** argv)
   HTable graphs = getFromFile(argv[1]);
   using cmd_t = void(*)(std::istream&, std::ostream&, HTable&);
   HashTable< std::string, cmd_t > cmds;
-  cmds.add("graph", showGraphs);
+  cmds.add("graphs", showGraphs);
   cmds.add("vertexes", showVertexes);
   cmds.add("outbound", showOutbound);
   cmds.add("inbound", showInbound);
