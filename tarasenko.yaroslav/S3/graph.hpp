@@ -43,6 +43,7 @@ namespace tarasenko
   };
 
   Graph merge(const Graph& lhs, const Graph& rhs);
+  HashTable< std::string, Graph > getFromFile(const std::string& filename);
 }
 
 #endif

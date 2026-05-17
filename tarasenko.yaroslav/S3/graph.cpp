@@ -1,4 +1,5 @@
 #include "graph.hpp"
+#include <fstream>
 #include <stdexcept>
 
 namespace tarasenko
@@ -213,4 +214,84 @@ namespace tarasenko
   {
     return lhs.vertex == rhs.vertex && lhs.weights == rhs.weights;
   }
+
+  std::string readSubstr(const std::string& line, size_t& pos)
+  {
+    size_t end = line.find(' ', pos);
+    if (end == std::string::npos)
+    {
+      std::string substr = line.substr(pos);
+      pos = line.size();
+      return substr;
+    }
+    std::string substr = line.substr(pos, end - pos);
+    pos = end + 1;
+    return substr;
+  }
+
+  HashTable< std::string, Graph > getFromFile(const std::string& filename)
+  {
+    std::ifstream input(filename);
+    if (!input)
+    {
+      throw std::runtime_error("Failed to open file");
+    }
+
+    HashTable< std::string, Graph > graphs;
+    std::string line;
+    while (std::getline(input, line))
+    {
+      if (line.empty())
+      {
+        continue;
+      }
+      size_t pos = 0;
+      std::string name = readSubstr(line, pos);
+      if (name.empty() || pos >= line.size())
+      {
+        throw std::runtime_error("Incorrect graph description");
+      }
+      size_t edgeCount = std::stoul(readSubstr(line, pos));
+      if (pos != line.size())
+      {
+        throw std::runtime_error("Incorrect graph description");
+      }
+
+      Graph graph;
+      size_t readEdges = 0;
+      while (readEdges < edgeCount && std::getline(input, line))
+      {
+        if (line.empty())
+        {
+          continue;
+        }
+        pos = 0;
+        std::string from = readSubstr(line, pos);
+        std::string to = readSubstr(line, pos);
+        if (from.empty() || to.empty() || pos >= line.size())
+        {
+          throw std::runtime_error("Incorrect edge description");
+        }
+        unsigned int weight = std::stoul(readSubstr(line, pos));
+        if (pos != line.size())
+        {
+          throw std::runtime_error("Incorrect edge description");
+        }
+
+        graph.bind(from, to, weight);
+        ++readEdges;
+      }
+
+      if (readEdges != edgeCount)
+      {
+        throw std::runtime_error("Unexpected end of file");
+      }
+
+      graphs.add(name, graph);
+    }
+
+    return graphs;
+  }
+
+
 }
