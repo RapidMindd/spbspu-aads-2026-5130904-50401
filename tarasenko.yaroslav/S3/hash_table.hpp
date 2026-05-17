@@ -35,6 +35,7 @@ namespace tarasenko
 
     size_t getSize() const;
     size_t getCapacity() const;
+    bool isEmpty() const;
 
     void swap(HashTable< Key, Value, Hash, Equal >& rhs) noexcept;
 
@@ -471,6 +472,12 @@ namespace tarasenko
       }
     }
     throw std::runtime_error("Key not found");
+  }
+
+  ht_template
+  bool ht_type::isEmpty() const
+  {
+    return getSize() == 0;
   }
 
   #undef ht_template

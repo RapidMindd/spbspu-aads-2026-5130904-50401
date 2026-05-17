@@ -22,6 +22,7 @@ BOOST_AUTO_TEST_CASE(default_constructor)
   HTable table;
   BOOST_TEST(table.getSize() == 0);
   BOOST_TEST(table.getCapacity() == 64);
+  BOOST_TEST(table.isEmpty());
 }
 
 BOOST_AUTO_TEST_CASE(add)

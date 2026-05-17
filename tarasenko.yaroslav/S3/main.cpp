@@ -11,6 +11,11 @@ using HTable = HashTable< std::string, Graph >;
 
 void showGraphs(std::istream&, std::ostream& out, HTable& graphs)
 {
+  if (graphs.isEmpty())
+  {
+    out << "\n";
+    return;
+  }
   Vector< std::string > graphNames;
   for (auto it = graphs.begin(); it != graphs.end(); ++it)
   {
@@ -31,6 +36,12 @@ void showVertexes(std::istream& in, std::ostream& out, HTable& graphs)
   if (graphs.has(graphName))
   {
     Vector< std::string > vertexes = graphs.get(graphName).getVertexes();
+    if (vertexes.isEmpty())
+    {
+      out << "\n";
+      return;
+    }
+    std::sort(vertexes.begin(), vertexes.end());
     for (auto it = vertexes.begin(); it != vertexes.end(); ++it)
     {
       out << *it << "\n";
@@ -51,6 +62,11 @@ void showOutbound(std::istream& in, std::ostream& out, HTable& graphs)
   if (graphs.has(graphName) && graphs.get(graphName).hasVertex(vertexName))
   {
     Vector< EdgeInfo > outbound = graphs.get(graphName).getOutbound(vertexName);
+    if (outbound.isEmpty())
+    {
+      out << "\n";
+      return;
+    }
     for (auto it = outbound.begin(); it != outbound.end(); ++it)
     {
       out << it->vertex;
@@ -76,6 +92,11 @@ void showInbound(std::istream& in, std::ostream& out, HTable& graphs)
   if (graphs.has(graphName) && graphs.get(graphName).hasVertex(vertexName))
   {
     Vector< EdgeInfo > inbound = graphs.get(graphName).getInbound(vertexName);
+    if (inbound.isEmpty())
+    {
+      out << "\n";
+      return;
+    }
     for (auto it = inbound.begin(); it != inbound.end(); ++it)
     {
       out << it->vertex;
