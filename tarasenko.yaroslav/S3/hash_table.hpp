@@ -29,6 +29,7 @@ namespace tarasenko
     void add(const Key& key, const Value& val);
     bool drop(const Key& key);
     const Value& get(const Key& key) const;
+    Value& get(const Key& key);
     bool has(const Key& key) const;
     void rehash(size_t slots);
 
@@ -455,6 +456,21 @@ namespace tarasenko
   ht_const_iterator ht_type::end() const
   {
     return cend();
+  }
+
+  ht_template
+  Value& ht_type::get(const Key& key)
+  {
+    size_t slot = hash_(key) % table_.getSize();
+    auto& list = table_[slot];
+    for (auto it = list.begin(); it != list.end(); ++it)
+    {
+      if (equal_(it->first, key))
+      {
+        return it->second;
+      }
+    }
+    throw std::runtime_error("Key not found");
   }
 
   #undef ht_template

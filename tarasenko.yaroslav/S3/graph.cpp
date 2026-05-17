@@ -87,6 +87,7 @@ namespace tarasenko
     {
       result.pushBack(it->first);
     }
+    std::sort(result.begin(), result.end());
     return result;
   }
 
