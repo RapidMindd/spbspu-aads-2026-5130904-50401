@@ -1,6 +1,7 @@
 #include "graph.hpp"
 #include <fstream>
 #include <stdexcept>
+#include <algorithm>
 
 namespace tarasenko
 {
