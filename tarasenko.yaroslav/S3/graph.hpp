@@ -13,6 +13,7 @@ namespace tarasenko
     std::string vertex;
     Vector< unsigned int > weights;
   };
+  bool operator==(const EdgeInfo& lhs, const EdgeInfo& rhs);
 
   class Graph
   {
@@ -25,12 +26,13 @@ namespace tarasenko
     bool cut(const std::string& from, const std::string& to, unsigned int weight);
 
     Vector< std::string > getVertexes() const;
-    Vector< EdgeInfo > getOutbound() const;
-    Vector< EdgeInfo > getInbound() const;
+    Vector< EdgeInfo > getOutbound(const std::string& vertex) const;
+    Vector< EdgeInfo > getInbound(const std::string& vertex) const;
 
     Graph extract(const Vector< std::string >& vertexes) const;
 
     void swap(Graph& rhs) noexcept;
+
   private:
     HashTable<
       std::pair< std::string, std::string >,

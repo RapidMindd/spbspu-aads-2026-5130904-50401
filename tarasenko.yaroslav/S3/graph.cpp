@@ -60,18 +60,16 @@ namespace tarasenko
     Graph copy = *this;
     Vector< unsigned int > weights = copy.edges_.get(edge);
 
-    for (size_t i = 0; i < weights.getSize(); ++i)
+    for (auto it = weights.begin(); it != weights.end(); ++it)
     {
-      if (weights[i] == weight)
+      if (*it == weight)
       {
-        weights.erase(i);
-
+        weights.erase(it);
         copy.edges_.drop(edge);
         if (!weights.isEmpty())
         {
           copy.edges_.add(edge, weights);
         }
-
         swap(copy);
         return true;
       }
@@ -90,23 +88,44 @@ namespace tarasenko
     return result;
   }
 
-  Vector< EdgeInfo > Graph::getOutbound() const
+  void sortEdges(Vector< EdgeInfo >& edges)
+  {
+    for (auto it = edges.begin(); it != edges.end(); ++it)
+    {
+      std::sort(it->weights.begin(), it->weights.end());
+    }
+    auto compare = [](const EdgeInfo& lhs, const EdgeInfo& rhs)
+    {
+      return lhs.vertex < rhs.vertex;
+    };
+    std::sort(edges.begin(), edges.end(), compare);
+  }
+
+  Vector< EdgeInfo > Graph::getOutbound(const std::string& vertex) const
   {
     Vector< EdgeInfo > result;
     for (auto it = edges_.begin(); it != edges_.end(); ++it)
     {
-      result.pushBack({it->first.second, it->second});
+      if (it->first.first == vertex)
+      {
+        result.pushBack({it->first.second, it->second});
+      }
     }
+    sortEdges(result);
     return result;
   }
 
-  Vector< EdgeInfo > Graph::getInbound() const
+  Vector< EdgeInfo > Graph::getInbound(const std::string& vertex) const
   {
     Vector< EdgeInfo > result;
     for (auto it = edges_.begin(); it != edges_.end(); ++it)
     {
-      result.pushBack({it->first.first, it->second});
+      if (it->first.second == vertex)
+      {
+        result.pushBack({it->first.first, it->second});
+      }
     }
+    sortEdges(result);
     return result;
   }
 
@@ -173,5 +192,10 @@ namespace tarasenko
     }
 
     return result;
+  }
+
+  bool operator==(const EdgeInfo& lhs, const EdgeInfo& rhs)
+  {
+    return lhs.vertex == rhs.vertex && lhs.weights == rhs.weights;
   }
 }

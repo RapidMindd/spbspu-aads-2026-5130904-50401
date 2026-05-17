@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <stdexcept>
 #include <utility>
+#include <iterator>
 
 namespace tarasenko
 {
@@ -14,6 +15,12 @@ namespace tarasenko
   template< class T >
   struct VecIt
   {
+    using iterator_category = std::random_access_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T*;
+    using reference = T&;
+
     friend struct Vector< T >;
 
     VecIt() noexcept;
@@ -57,6 +64,12 @@ namespace tarasenko
   template< class T >
   struct VecConstIt
   {
+    using iterator_category = std::random_access_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = const T*;
+    using reference = const T&;
+
     friend struct Vector< T >;
 
     VecConstIt() noexcept;
