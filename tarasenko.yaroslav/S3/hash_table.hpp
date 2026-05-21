@@ -70,8 +70,8 @@ namespace tarasenko
   public:
     HashTableForwardIterator();
 
-    std::pair< Key, Value >& operator*() const;
-    std::pair< Key, Value >* operator->() const;
+    std::pair< Key, Value >& operator*();
+    std::pair< Key, Value >* operator->();
 
     HashTableForwardIterator& operator++();
     HashTableForwardIterator operator++(int);
@@ -258,13 +258,13 @@ namespace tarasenko
   }
 
   ht_template
-  Pair< Key, Value >& ht_iterator::operator*() const
+  Pair< Key, Value >& ht_iterator::operator*()
   {
     return *listIt_;
   }
 
   ht_template
-  Pair< Key, Value >* ht_iterator::operator->() const
+  Pair< Key, Value >* ht_iterator::operator->()
   {
     return &(**this);
   }
