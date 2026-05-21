@@ -63,21 +63,31 @@ int main()
   auto sums_it = sums_list.begin();
   for (size_t i = 0; i < max_size; ++i)
   {
-    bool flag = true;
-    for (auto it = iter_list.begin(); it != iter_list.end(); ++it)
+    auto it = iter_list.begin();
+    while (it->second <= i)
     {
-      if ((*it).second > i)
+      ++it;
+    }
+    size_t current_num = *(it->first);
+    std::cout << current_num;
+    if (max_num - current_num >= *sums_it)
+    {
+      *sums_it += current_num;
+    }
+    else
+    {
+      std::cout << "\n";
+      std::cerr << "addition overflow\n";
+      return 1;
+    }
+    ++(it->first);
+    ++it;
+    for (; it != iter_list.end(); ++it)
+    {
+      if (it->second > i)
       {
-        size_t current_num = *((*it).first);
-        if (flag)
-        {
-          std::cout << current_num;
-          flag = false;
-        }
-        else
-        {
-          std::cout << " " << current_num;
-        }
+        current_num = *(it->first);
+        std::cout << " " << current_num;
         if (max_num - current_num >= *sums_it)
         {
           *sums_it += current_num;
@@ -88,7 +98,7 @@ int main()
           std::cerr << "addition overflow\n";
           return 1;
         }
-        ++((*it).first);
+        ++(it->first);
       }
     }
     ++sums_it;
