@@ -7,13 +7,16 @@
 
 namespace tarasenko
 {
-  template< class T >
-  struct Node
+  namespace detail
   {
-    T _val;
-    Node< T >* _next;
-    Node< T >* _prev;
-  };
+    template< class T >
+    struct Node
+    {
+      T val_;
+      Node< T >* next_;
+      Node< T >* prev_;
+    };
+  }
 
   template< class T >
   class BidirList;
@@ -21,29 +24,26 @@ namespace tarasenko
   template< class T >
   class ListIter
   {
-    friend class BidirList< T >;
-    Node< T >* _ptr;
-    const BidirList< T >* _owner;
   public:
     ListIter();
     bool operator==(const ListIter< T >& it) const noexcept;
     bool operator!=(const ListIter< T >& it) const noexcept;
-    T& operator*() const;
-    T* operator->() const;
+    T& operator*();
+    T* operator->();
     ListIter< T >& operator++() noexcept;
     ListIter< T > operator++(int) noexcept;
     ListIter< T >& operator--() noexcept;
     ListIter< T > operator--(int) noexcept;
   private:
-    ListIter(Node< T >* node, const BidirList< T >* list) noexcept;
+    friend class BidirList< T >;
+    detail::Node< T >* ptr_;
+    const BidirList< T >* owner_;
+    ListIter(detail::Node< T >* node, const BidirList< T >* list) noexcept;
   };
 
   template< class T >
   class ListConstIter
   {
-    friend class BidirList< T >;
-    Node< T >* _ptr;
-    const BidirList< T >* _owner;
   public:
     ListConstIter();
     bool operator==(const ListConstIter< T >& it) const noexcept;
@@ -55,22 +55,20 @@ namespace tarasenko
     ListConstIter< T >& operator--() noexcept;
     ListConstIter< T > operator--(int) noexcept;
   private:
-    ListConstIter(Node< T >* node, const BidirList< T >* list) noexcept;
+    friend class BidirList< T >;
+    detail::Node< T >* ptr_;
+    const BidirList< T >* owner_;
+    ListConstIter(detail::Node< T >* node, const BidirList< T >* list) noexcept;
   };
 
   template< class T >
   class BidirList
   {
-    friend class ListIter< T >;
-    friend class ListConstIter< T >;
-    Node< T >* _head;
-    Node< T >* _tail;
-    size_t _size;
   public:
     BidirList();
-    ~BidirList();
     BidirList(const BidirList< T >& list);
     BidirList(BidirList< T >&& list) noexcept;
+    ~BidirList() noexcept;
     BidirList< T >& operator=(const BidirList< T >& list);
     BidirList< T >& operator=(BidirList< T >&& list) noexcept;
     size_t size() const noexcept;
@@ -87,6 +85,8 @@ namespace tarasenko
     bool empty() const noexcept;
     const T& front() const;
     const T& back() const;
+    T& front();
+    T& back();
     ListIter< T > erase(ListIter< T > it) noexcept;
     ListIter< T > erase(ListIter< T > start, ListIter< T > end) noexcept;
     void pop_front() noexcept;
@@ -95,17 +95,24 @@ namespace tarasenko
     ListIter< T > insert(ListIter< T > it, T&& val);
     void clear() noexcept;
     void swap(BidirList< T >& list1, BidirList< T >& list2) noexcept;
+  private:
+    friend class ListIter< T >;
+    friend class ListConstIter< T >;
+    detail::Node< T >* head_;
+    detail::Node< T >* tail_;
+    size_t size_;
+    ListIter< T > insert_node(ListIter< T > it, detail::Node< T >* new_node) noexcept;
   };
 
   template< class T >
-  BidirList< T >::BidirList() :
-    _head(nullptr),
-    _tail(nullptr),
-    _size(0)
+  BidirList< T >::BidirList():
+    head_(nullptr),
+    tail_(nullptr),
+    size_(0)
   {}
 
   template< class T >
-  BidirList< T >::~BidirList()
+  BidirList< T >::~BidirList() noexcept
   {
     clear();
   }
@@ -113,28 +120,28 @@ namespace tarasenko
   template< class T >
   size_t BidirList< T >::size() const noexcept
   {
-    return _size;
+    return size_;
   }
 
   template< class T >
   ListIter< T > BidirList< T >::begin() noexcept
   {
-    return ListIter< T >(_head, this);
+    return ListIter< T >(head_, this);
   }
 
   template< class T >
   ListConstIter< T > BidirList< T >::begin() const noexcept
   {
-    return ListConstIter< T >(_head, this);
+    return ListConstIter< T >(head_, this);
   }
 
   template< class T >
   ListConstIter< T > BidirList< T >::cbegin() const noexcept
   {
-    return ListConstIter< T >(_head, this);
+    return ListConstIter< T >(head_, this);
   }
 
-   template< class T >
+  template< class T >
   ListIter< T > BidirList< T >::end() noexcept
   {
     return ListIter< T >(nullptr, this);
@@ -153,51 +160,51 @@ namespace tarasenko
   }
 
   template< class T >
-  ListIter< T >::ListIter() :
-    _ptr(nullptr),
-    _owner(nullptr)
+  ListIter< T >::ListIter():
+    ptr_(nullptr),
+    owner_(nullptr)
   {}
 
   template< class T >
-  ListConstIter< T >::ListConstIter() :
-    _ptr(nullptr),
-    _owner(nullptr)
+  ListConstIter< T >::ListConstIter():
+    ptr_(nullptr),
+    owner_(nullptr)
   {}
 
   template< class T >
-  ListIter< T >::ListIter(Node< T >* node, const BidirList< T >* list) noexcept :
-    _ptr(node),
-    _owner(list)
+  ListIter< T >::ListIter(detail::Node< T >* node, const BidirList< T >* list) noexcept:
+    ptr_(node),
+    owner_(list)
   {}
 
   template< class T >
-  ListConstIter< T >::ListConstIter(Node< T >* node, const BidirList< T >* list) noexcept :
-    _ptr(node),
-    _owner(list)
+  ListConstIter< T >::ListConstIter(detail::Node< T >* node, const BidirList< T >* list) noexcept:
+    ptr_(node),
+    owner_(list)
   {}
 
   template< class T >
   bool ListIter< T >::operator==(const ListIter< T >& it) const noexcept
   {
-    return _ptr == it._ptr;
+    return ptr_ == it.ptr_;
   }
 
   template< class T >
   bool ListIter< T >::operator!=(const ListIter< T >& it) const noexcept
   {
-    return !(_ptr == it._ptr);
+    return !(ptr_ == it.ptr_);
   }
 
   template< class T >
   bool ListConstIter< T >::operator==(const ListConstIter< T >& it) const noexcept
   {
-    return _ptr == it._ptr;
+    return ptr_ == it.ptr_;
   }
 
   template< class T >
   bool ListConstIter< T >::operator!=(const ListConstIter< T >& it) const noexcept
   {
-    return !(_ptr == it._ptr);
+    return !(ptr_ == it.ptr_);
   }
 
   template< class T >
@@ -206,10 +213,10 @@ namespace tarasenko
     insert(end(), val);
   }
 
-    template< class T >
+  template< class T >
   void BidirList< T >::push_back(T&& val)
   {
-    insert(end(), std::move(val));
+    insert(end(), std::forward< T >(val));
   }
 
   template< class T >
@@ -221,44 +228,44 @@ namespace tarasenko
   template< class T >
   void BidirList< T >::push_front(T&& val)
   {
-    insert(begin(), std::move(val));
+    insert(begin(), std::forward< T >(val));
   }
 
   template< class T >
-  T& ListIter< T >::operator*() const
+  T& ListIter< T >::operator*()
   {
-    return _ptr->_val;
+    return ptr_->val_;
   }
 
   template< class T >
   const T& ListConstIter< T >::operator*() const
   {
-    return _ptr->_val;
+    return ptr_->val_;
   }
 
   template< class T >
-  T* ListIter< T >:: operator->() const
+  T* ListIter< T >::operator->()
   {
-    return &_ptr->_val;
+    return &ptr_->val_;
   }
 
   template< class T >
-  const T* ListConstIter< T >:: operator->() const
+  const T* ListConstIter< T >::operator->() const
   {
-    return &_ptr->_val;
+    return &ptr_->val_;
   }
 
   template< class T >
   ListIter< T >& ListIter< T >::operator++() noexcept
   {
-    _ptr = _ptr->_next;
+    ptr_ = ptr_->next_;
     return *this;
   }
 
   template< class T >
   ListConstIter< T >& ListConstIter< T >::operator++() noexcept
   {
-    _ptr = _ptr->_next;
+    ptr_ = ptr_->next_;
     return *this;
   }
 
@@ -266,7 +273,7 @@ namespace tarasenko
   ListIter< T > ListIter< T >::operator++(int) noexcept
   {
     ListIter< T > copy(*this);
-    _ptr = _ptr->_next;
+    ptr_ = ptr_->next_;
     return copy;
   }
 
@@ -274,109 +281,122 @@ namespace tarasenko
   ListConstIter< T > ListConstIter< T >::operator++(int) noexcept
   {
     ListConstIter< T > copy(*this);
-    _ptr = _ptr->_next;
+    ptr_ = ptr_->next_;
     return copy;
   }
 
   template< class T >
   ListIter< T >& ListIter< T >::operator--() noexcept
   {
-    if (_ptr == nullptr)
+    if (ptr_ == nullptr)
     {
-      _ptr = _owner->_tail;
+      ptr_ = owner_->tail_;
       return *this;
     }
-    _ptr = _ptr->_prev;
+    ptr_ = ptr_->prev_;
     return *this;
   }
 
   template< class T >
   ListConstIter< T >& ListConstIter< T >::operator--() noexcept
   {
-    if (_ptr == nullptr)
+    if (ptr_ == nullptr)
     {
-      _ptr = _owner->_tail;
+      ptr_ = owner_->tail_;
       return *this;
     }
-    _ptr = _ptr->_prev;
+    ptr_ = ptr_->prev_;
     return *this;
   }
 
   template< class T >
   ListIter< T > ListIter< T >::operator--(int) noexcept
   {
-    if (_ptr == nullptr)
+    if (ptr_ == nullptr)
     {
-      _ptr = _owner->_tail;
+      ptr_ = owner_->tail_;
       return *this;
     }
     ListIter< T > copy(*this);
-    _ptr = _ptr->_prev;
+    ptr_ = ptr_->prev_;
     return copy;
   }
 
   template< class T >
   ListConstIter< T > ListConstIter< T >::operator--(int) noexcept
   {
-    if (_ptr == nullptr)
+    if (ptr_ == nullptr)
     {
-      _ptr = _owner->_tail;
+      ptr_ = owner_->tail_;
       return *this;
     }
     ListConstIter< T > copy(*this);
-    _ptr = _ptr->_prev;
+    ptr_ = ptr_->prev_;
     return copy;
   }
 
   template< class T >
   bool BidirList< T >::empty() const noexcept
   {
-    return !_size;
+    return !size_;
   }
 
   template< class T >
   const T& BidirList< T >::front() const
   {
-    return _head->_val;
+    return head_->val_;
   }
+
   template< class T >
   const T& BidirList< T >::back() const
   {
-    return _tail->_val;
+    return tail_->val_;
+  }
+
+  template< class T >
+  T& BidirList< T >::front()
+  {
+    return head_->val_;
+  }
+
+  template< class T >
+  T& BidirList< T >::back()
+  {
+    return tail_->val_;
   }
 
   template< class T >
   ListIter< T > BidirList< T >::erase(ListIter< T > it) noexcept
   {
-    Node< T >* next = it._ptr->_next;
-    Node< T >* prev = it._ptr->_prev;
-    delete it._ptr;
+    detail::Node< T >* next = it.ptr_->next_;
+    detail::Node< T >* prev = it.ptr_->prev_;
+    delete it.ptr_;
     if (next != nullptr)
     {
-      next->_prev = prev;
+      next->prev_ = prev;
     }
     else
     {
-      _tail = prev;
+      tail_ = prev;
     }
 
     if (prev != nullptr)
     {
-      prev->_next = next;
+      prev->next_ = next;
     }
     else
     {
-      _head = next;
+      head_ = next;
     }
-    it._ptr = next;
-    _size--;
+    it.ptr_ = next;
+    size_--;
     return it;
   }
 
   template< class T >
   ListIter< T > BidirList< T >::erase(ListIter< T > first, ListIter< T > last) noexcept
   {
-    while(first != last)
+    while (first != last)
     {
       first = erase(first);
     }
@@ -398,68 +418,45 @@ namespace tarasenko
   template< class T >
   ListIter< T > BidirList< T >::insert(ListIter< T > it, const T& val)
   {
-    Node< T >* new_node;
-    if (empty())
-    {
-      new_node = new Node< T >{val, nullptr, nullptr};
-      _head = new_node;
-      _tail = new_node;
-    }
-    else if (it._ptr == nullptr)
-    {
-      new_node = new Node< T >{val, nullptr, _tail};
-      _tail->_next = new_node;
-      _tail = new_node;
-    }
-    else
-    {
-      new_node = new Node< T >{val, it._ptr, it._ptr->_prev};
-      if (it._ptr->_prev == nullptr)
-      {
-        _head->_prev = new_node;
-        _head = new_node;
-      }
-      else
-      {
-        it._ptr->_prev->_next = new_node;
-        it._ptr->_prev = new_node;
-      }
-    }
-    _size++;
-    return ListIter< T >(new_node, this);
+    return insert_node(it, new detail::Node< T >{val, nullptr, nullptr});
   }
 
   template< class T >
   ListIter< T > BidirList< T >::insert(ListIter< T > it, T&& val)
   {
-    Node< T >* new_node;
+    return insert_node(it, new detail::Node< T >{std::forward< T >(val), nullptr, nullptr});
+  }
+
+  template< class T >
+  ListIter< T > BidirList< T >::insert_node(ListIter< T > it, detail::Node< T >* new_node) noexcept
+  {
     if (empty())
     {
-      new_node = new Node< T >{std::move(val), nullptr, nullptr};
-      _head = new_node;
-      _tail = new_node;
+      head_ = new_node;
+      tail_ = new_node;
     }
-    else if (it._ptr == nullptr)
+    else if (it.ptr_ == nullptr)
     {
-      new_node = new Node< T >{std::move(val), nullptr, _tail};
-      _tail->_next = new_node;
-      _tail = new_node;
+      new_node->prev_ = tail_;
+      tail_->next_ = new_node;
+      tail_ = new_node;
     }
     else
     {
-      new_node = new Node< T >{std::move(val), it._ptr, it._ptr->_prev};
-      if (it._ptr->_prev == nullptr)
+      new_node->next_ = it.ptr_;
+      new_node->prev_ = it.ptr_->prev_;
+      if (it.ptr_->prev_ == nullptr)
       {
-        _head->_prev = new_node;
-        _head = new_node;
+        head_->prev_ = new_node;
+        head_ = new_node;
       }
       else
       {
-        it._ptr->_prev->_next = new_node;
-        it._ptr->_prev = new_node;
+        it.ptr_->prev_->next_ = new_node;
+        it.ptr_->prev_ = new_node;
       }
     }
-    _size++;
+    size_++;
     return ListIter< T >(new_node, this);
   }
 
@@ -470,14 +467,14 @@ namespace tarasenko
   }
 
   template< class T >
-  BidirList< T >::BidirList(const BidirList< T >& list) :
-    _head(nullptr),
-    _tail(nullptr),
-    _size(0)
+  BidirList< T >::BidirList(const BidirList< T >& list):
+    head_(nullptr),
+    tail_(nullptr),
+    size_(0)
   {
     try
     {
-      for(ListConstIter< T > it = list.begin(); it != list.end(); ++it)
+      for (ListConstIter< T > it = list.begin(); it != list.end(); ++it)
       {
         push_back(*it);
       }
@@ -490,22 +487,18 @@ namespace tarasenko
   }
 
   template< class T >
-  BidirList< T >::BidirList(BidirList< T >&& list) noexcept :
-    _head(list._head),
-    _tail(list._tail),
-    _size(list._size)
-  {
-    list._head = nullptr;
-    list._tail = nullptr;
-    list._size = 0;
-  }
+  BidirList< T >::BidirList(BidirList< T >&& list) noexcept:
+    head_(std::exchange(list.head_, nullptr)),
+    tail_(std::exchange(list.tail_, nullptr)),
+    size_(std::exchange(list.size_, 0))
+  {}
 
   template< class T >
   void BidirList< T >::swap(BidirList< T >& list1, BidirList< T >& list2) noexcept
   {
-    std::swap(list1._head, list2._head);
-    std::swap(list1._tail, list2._tail);
-    std::swap(list1._size, list2._size);
+    std::swap(list1.head_, list2.head_);
+    std::swap(list1.tail_, list2.tail_);
+    std::swap(list1.size_, list2.size_);
   }
 
   template< class T >
@@ -523,13 +516,8 @@ namespace tarasenko
     {
       return *this;
     }
-    clear();
-    _head = list._head;
-    _tail = list._tail;
-    _size = list._size;
-    list._head = nullptr;
-    list._tail = nullptr;
-    list._size = 0;
+    BidirList< T > temp(std::move(list));
+    swap(*this, temp);
     return *this;
   }
 }
