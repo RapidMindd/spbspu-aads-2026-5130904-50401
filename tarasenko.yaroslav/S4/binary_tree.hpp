@@ -3,8 +3,8 @@
 
 #include <cstddef>
 #include <stdexcept>
+#include <utility>
 #include "less_to.hpp"
-#include "utility"
 
 namespace tarasenko
 {
@@ -31,12 +31,21 @@ namespace tarasenko
   {
   public:
     BSTree();
+    ~BSTree();
+
+    BSTree(const BSTree< Key, Value, Compare >& rhs);
+    BSTree(BSTree< Key, Value, Compare >&& rhs) noexcept;
+
+    BSTree< Key, Value, Compare >& operator=(const BSTree< Key, Value, Compare >& rhs);
+    BSTree< Key, Value, Compare >& operator=(BSTree< Key, Value, Compare >&& rhs) noexcept;
 
     bool add(const Key& key, const Value& val);
     bool drop(const Key& key);
     const Value& get(const Key& key) const;
     Value& get(const Key& key);
     bool has(const Key& key) const;
+
+    void clear();
 
     size_t getSize() const;
     bool isEmpty() const;
@@ -69,7 +78,10 @@ namespace tarasenko
   private:
     detail::Node< Key, Value >* find(const Key& key) const;
     void replace(detail::Node< Key, Value >* node, detail::Node< Key, Value >* child);
-    detail::Node< Key, Value >* siftLeft(detail::Node< Key, Value >* node) const;
+    detail::Node< Key, Value >* fallLeft(detail::Node< Key, Value >* node) const;
+    void clear(detail::Node< Key, Value >* node);
+    detail::Node< Key, Value >* copy(detail::Node< Key, Value >* node, detail::Node< Key, Value >* parent);
+    void swap(BSTree< Key, Value, Compare >& rhs) noexcept;
   };
 
   template< class Key, class Value >
@@ -189,7 +201,7 @@ namespace tarasenko
     {
       root_ = child;
     }
-    else if (node == node->parent->left)
+    else if (node == node->parent_->left_)
     {
       node->parent_->left_ = child;
     }
@@ -204,7 +216,7 @@ namespace tarasenko
   }
 
   tree_template
-  tree_node* tree_type::siftLeft(tree_node* node) const
+  tree_node* tree_type::fallLeft(tree_node* node) const
   {
     while (node->left_)
     {
@@ -225,15 +237,17 @@ namespace tarasenko
     {
       replace(node, node->right_);
       delete node;
+      --size_;
       return true;
     }
     if (!node->right_)
     {
       replace(node, node->left_);
       delete node;
+      --size_;
       return true;
     }
-    tree_node* next = siftLeft(node->right_);
+    tree_node* next = fallLeft(node->right_);
     if (next->parent_ != node)
     {
       replace(next, next->right_);
@@ -244,6 +258,7 @@ namespace tarasenko
     next->left_ = node->left_;
     next->left_->parent_ = next;
     delete node;
+    --size_;
     return true;
   }
 
@@ -287,6 +302,103 @@ namespace tarasenko
   bool tree_type::has(const Key& key) const
   {
     return find(key);
+  }
+
+  tree_template
+  tree_type::~BSTree()
+  {
+    clear();
+  }
+
+  tree_template
+  void tree_type::clear()
+  {
+    clear(root_);
+    root_ = nullptr;
+    size_ = 0;
+  }
+
+  tree_template
+  void tree_type::clear(tree_node* node)
+  {
+    if (node)
+    {
+      clear(node->left_);
+      clear(node->right_);
+      delete node;
+    }
+  }
+
+  tree_template
+  tree_node* tree_type::copy(tree_node* node, tree_node* parent)
+  {
+    if (!node)
+    {
+      return nullptr;
+    }
+    tree_node* cur = new tree_node{node->data_, nullptr, nullptr, parent};
+    try
+    {
+      cur->left_ = copy(node->left_, cur);
+      cur->right_ = copy(node->right_, cur);
+    }
+    catch (...)
+    {
+      clear(cur);
+      throw;
+    }
+
+    return cur;
+  }
+
+  tree_template
+  tree_type::BSTree(const BSTree< Key, Value, Compare >& rhs):
+    root_(copy(rhs.root_, nullptr)),
+    size_(rhs.size_),
+    comp_(rhs.comp_)
+  {}
+
+  tree_template
+  tree_type::BSTree(BSTree< Key, Value, Compare >&& rhs) noexcept:
+    root_(rhs.root_),
+    size_(rhs.size_),
+    comp_(rhs.comp_)
+  {
+    rhs.root_ = nullptr;
+    rhs.size_ = 0;
+  }
+
+  tree_template
+  void tree_type::swap(BSTree< Key, Value, Compare >& rhs) noexcept
+  {
+    std::swap(root_, rhs.root_);
+    std::swap(size_, rhs.size_);
+    std::swap(comp_, rhs.comp_);
+  }
+
+  tree_template
+  tree_type& tree_type::operator=(const BSTree< Key, Value, Compare >& rhs)
+  {
+    if (this == std::addressof(rhs))
+    {
+      return *this;
+    }
+    tree_type copy = rhs;
+    swap(copy);
+
+    return *this;
+  }
+
+  tree_template
+  tree_type& tree_type::operator=(BSTree< Key, Value, Compare >&& rhs) noexcept
+  {
+    if (this == std::addressof(rhs))
+    {
+      return *this;
+    }
+    swap(rhs);
+
+    return *this;
   }
 
   #undef tree_template
