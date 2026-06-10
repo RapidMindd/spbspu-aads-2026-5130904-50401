@@ -2,6 +2,7 @@
 #define BINARY_TREE_HPP
 
 #include <cstddef>
+#include <stdexcept>
 #include "less_to.hpp"
 #include "utility"
 
@@ -29,6 +30,8 @@ namespace tarasenko
   class BSTree
   {
   public:
+    BSTree();
+
     bool add(const Key& key, const Value& val);
     bool drop(const Key& key);
     const Value& get(const Key& key) const;
@@ -66,7 +69,7 @@ namespace tarasenko
   private:
     detail::Node< Key, Value >* find(const Key& key) const;
     void replace(detail::Node< Key, Value >* node, detail::Node< Key, Value >* child);
-    detail::Node< Key, Value >* siftLeft(detail::Node< Key, Value >* node);
+    detail::Node< Key, Value >* siftLeft(detail::Node< Key, Value >* node) const;
   };
 
   template< class Key, class Value >
@@ -201,7 +204,7 @@ namespace tarasenko
   }
 
   tree_template
-  tree_node* tree_type::siftLeft(tree_node* node)
+  tree_node* tree_type::siftLeft(tree_node* node) const
   {
     while (node->left_)
     {
@@ -242,6 +245,48 @@ namespace tarasenko
     next->left_->parent_ = next;
     delete node;
     return true;
+  }
+
+  tree_template
+  tree_type::BSTree():
+    root_(nullptr),
+    size_(0),
+    comp_(Compare{})
+  {}
+
+  tree_template
+  size_t tree_type::getSize() const
+  {
+    return size_;
+  }
+
+  tree_template
+  bool tree_type::isEmpty() const
+  {
+    return !size_;
+  }
+
+  tree_template
+  const Value& tree_type::get(const Key& key) const
+  {
+    tree_node* node = find(key);
+    if (!node)
+    {
+      throw std::runtime_error("Key not found");
+    }
+    return node->data_.second;
+  }
+
+  tree_template
+  Value& tree_type::get(const Key& key)
+  {
+    return const_cast< Value& >(const_cast< const tree_type* >(this)->get(key));
+  }
+
+  tree_template
+  bool tree_type::has(const Key& key) const
+  {
+    return find(key);
   }
 
   #undef tree_template
