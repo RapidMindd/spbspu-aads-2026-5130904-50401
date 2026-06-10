@@ -25,6 +25,15 @@ namespace tarasenko
       Node< Key, Value >* right_;
       Node< Key, Value >* parent_;
     };
+
+    template< class Key, class Value >
+    Node< Key, Value >* next(Node< Key, Value >* node);
+    template< class Key, class Value >
+    Node< Key, Value >* prev(Node< Key, Value >* node);
+    template< class Key, class Value >
+    Node< Key, Value >* fallLeft(Node< Key, Value >* node);
+    template< class Key, class Value >
+    Node< Key, Value >* fallRight(Node< Key, Value >* node);
   }
 
   template< class Key, class Value, class Compare = LessTo< Key > >
@@ -80,7 +89,6 @@ namespace tarasenko
   private:
     detail::Node< Key, Value >* find(const Key& key) const;
     void replace(detail::Node< Key, Value >* node, detail::Node< Key, Value >* child);
-    detail::Node< Key, Value >* fallLeft(detail::Node< Key, Value >* node) const;
     void clear(detail::Node< Key, Value >* node);
     detail::Node< Key, Value >* copy(detail::Node< Key, Value >* node, detail::Node< Key, Value >* parent);
     void swap(BSTree< Key, Value, Compare >& rhs) noexcept;
@@ -90,6 +98,8 @@ namespace tarasenko
   class BSTIterator
   {
   public:
+    BSTIterator();
+
     std::pair< Key, Value >& operator*() const;
     std::pair< Key, Value >* operator->() const;
 
@@ -105,12 +115,17 @@ namespace tarasenko
   private:
     detail::Node< Key, Value >* node_ = nullptr;
     detail::Node< Key, Value >* root_ = nullptr;
+
+  private:
+    BSTIterator(detail::Node< Key, Value >* node, detail::Node< Key, Value >* root) noexcept;
   };
 
   template< class Key, class Value >
   class BSTConstIterator
   {
   public:
+    BSTConstIterator();
+
     const std::pair< Key, Value >& operator*() const;
     const std::pair< Key, Value >* operator->() const;
 
@@ -126,6 +141,9 @@ namespace tarasenko
   private:
     detail::Node< Key, Value >* node_ = nullptr;
     detail::Node< Key, Value >* root_ = nullptr;
+
+  private:
+    BSTConstIterator(detail::Node< Key, Value >* node, detail::Node< Key, Value >* root) noexcept;
   };
 
   #define tree_template template< class Key, class Value, class Compare >
@@ -133,6 +151,7 @@ namespace tarasenko
   #define tree_iterator BSTIterator< Key, Value >
   #define tree_const_iterator BSTConstIterator< Key, Value >
   #define tree_node detail::Node< Key, Value >
+  #define iter_template template< class Key, class Value >
 
   tree_template
   bool tree_type::add(const Key& key, const Value& val)
@@ -215,16 +234,6 @@ namespace tarasenko
     {
       child->parent_ = node->parent_;
     }
-  }
-
-  tree_template
-  tree_node* tree_type::fallLeft(tree_node* node) const
-  {
-    while (node->left_)
-    {
-      node = node->left_;
-    }
-    return node;
   }
 
   tree_template
@@ -413,11 +422,198 @@ namespace tarasenko
     }
   }
 
+  iter_template
+  tree_iterator::BSTIterator():
+    node_(nullptr),
+    root_(nullptr)
+  {}
+
+  iter_template
+  tree_const_iterator::BSTConstIterator():
+    node_(nullptr),
+    root_(nullptr)
+  {}
+
+  iter_template
+  tree_iterator::BSTIterator(tree_node* node, tree_node* root) noexcept:
+    node_(node),
+    root_(root)
+  {}
+
+  iter_template
+  tree_const_iterator::BSTConstIterator(tree_node* node, tree_node* root) noexcept:
+    node_(node),
+    root_(root)
+  {}
+
+  iter_template
+  std::pair< Key, Value >& tree_iterator::operator*() const
+  {
+    return node_->data_;
+  }
+
+  iter_template
+  const std::pair< Key, Value >& tree_const_iterator::operator*() const
+  {
+    return node_->data_;
+  }
+
+  iter_template
+  std::pair< Key, Value >* tree_iterator::operator->() const
+  {
+    return &node_->data_;
+  }
+
+  iter_template
+  const std::pair< Key, Value >* tree_const_iterator::operator->() const
+  {
+    return &node_->data_;
+  }
+
+  template< class Key, class Value >
+  tree_node* detail::fallLeft(tree_node* node)
+  {
+    while (node->left_)
+    {
+      node = node->left_;
+    }
+    return node;
+  }
+
+  template< class Key, class Value >
+  tree_node* detail::next(tree_node* node)
+  {
+    if (node->right_)
+    {
+      return fallLeft(node->right_);
+    }
+    else
+    {
+      while (node->parent_ && node->parent_->right_ == node)
+      {
+        node = node->parent_;
+      }
+      return node->parent_;
+    }
+  }
+
+  template< class Key, class Value >
+  tree_node* detail::fallRight(tree_node* node)
+  {
+    while (node->right_)
+    {
+      node = node->right_;
+    }
+    return node;
+  }
+
+  template< class Key, class Value >
+  tree_node* detail::prev(tree_node* node)
+  {
+    if (node->left_)
+    {
+      return fallRight(node->left_);
+    }
+    else
+    {
+      while (node->parent_ && node->parent_->left_ == node)
+      {
+        node = node->parent_;
+      }
+      return node->parent_;
+    }
+  }
+
+  iter_template
+  tree_iterator& tree_iterator::operator++()
+  {
+    node_ = next(node_);
+    return *this;
+  }
+
+  iter_template
+  tree_const_iterator& tree_const_iterator::operator++()
+  {
+    node_ = next(node_);
+    return *this;
+  }
+
+  iter_template
+  tree_iterator tree_iterator::operator++(int)
+  {
+    tree_iterator copy = *this;
+    ++(*this);
+    return copy;
+  }
+
+  iter_template
+  tree_const_iterator tree_const_iterator::operator++(int)
+  {
+    tree_const_iterator copy = *this;
+    ++(*this);
+    return copy;
+  }
+
+  iter_template
+  tree_iterator& tree_iterator::operator--()
+  {
+    node_ = prev(node_);
+    return *this;
+  }
+
+  iter_template
+  tree_const_iterator& tree_const_iterator::operator--()
+  {
+    node_ = prev(node_);
+    return *this;
+  }
+
+  iter_template
+  tree_iterator tree_iterator::operator--(int)
+  {
+    tree_iterator copy = *this;
+    --(*this);
+    return copy;
+  }
+
+  iter_template
+  tree_const_iterator tree_const_iterator::operator--(int)
+  {
+    tree_const_iterator copy = *this;
+    --(*this);
+    return copy;
+  }
+
+  iter_template
+  bool tree_iterator::operator==(const tree_iterator& rhs) const
+  {
+    return node_ == rhs.node_;
+  }
+
+  iter_template
+  bool tree_const_iterator::operator==(const tree_const_iterator& rhs) const
+  {
+    return node_ == rhs.node_;
+  }
+
+  iter_template
+  bool tree_iterator::operator!=(const tree_iterator& rhs) const
+  {
+    return !(*this == rhs);
+  }
+
+  iter_template
+  bool tree_const_iterator::operator!=(const tree_const_iterator& rhs) const
+  {
+    return !(*this == rhs);
+  }
+
   #undef tree_template
   #undef tree_type
   #undef tree_iterator
   #undef tree_const_iterator
   #undef tree_node
+  #undef iter_template
 }
 
 #endif
