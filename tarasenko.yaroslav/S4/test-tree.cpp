@@ -63,3 +63,58 @@ BOOST_AUTO_TEST_CASE(has)
   BOOST_TEST(tree.has(1));
   BOOST_TEST(!tree.has(2));
 }
+
+BOOST_AUTO_TEST_CASE(initializer_list)
+{
+  Tree tree = {{1, 1}, {2, 2}, {3, 3}};
+  BOOST_TEST(tree.getSize() == 3);
+  BOOST_TEST(tree.get(1) == 1);
+  BOOST_TEST(tree.get(2) == 2);
+  BOOST_TEST(tree.get(3) == 3);
+}
+
+BOOST_AUTO_TEST_CASE(copy_constructor)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  Tree copy = tree;
+  BOOST_TEST(copy.getSize() == 4);
+  for (int i = 1; i <= 4; ++i)
+  {
+    BOOST_TEST(copy.get(i) == i);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(copy_assignment)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  Tree copy;
+  copy = tree;
+  BOOST_TEST(copy.getSize() == 4);
+  for (int i = 1; i <= 4; ++i)
+  {
+    BOOST_TEST(copy.get(i) == i);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(move_constructor)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  Tree copy = std::move(tree);
+  BOOST_TEST(copy.getSize() == 4);
+  for (int i = 1; i <= 4; ++i)
+  {
+    BOOST_TEST(copy.get(i) == i);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(move_assignment)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  Tree copy;
+  copy = std::move(tree);
+  BOOST_TEST(copy.getSize() == 4);
+  for (int i = 1; i <= 4; ++i)
+  {
+    BOOST_TEST(copy.get(i) == i);
+  }
+}

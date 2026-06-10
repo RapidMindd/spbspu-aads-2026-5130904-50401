@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <utility>
+#include <initializer_list>
 #include "less_to.hpp"
 
 namespace tarasenko
@@ -31,6 +32,7 @@ namespace tarasenko
   {
   public:
     BSTree();
+    BSTree(std::initializer_list< std::pair< Key, Value > > list);
     ~BSTree();
 
     BSTree(const BSTree< Key, Value, Compare >& rhs);
@@ -399,6 +401,16 @@ namespace tarasenko
     swap(rhs);
 
     return *this;
+  }
+
+  tree_template
+  tree_type::BSTree(std::initializer_list< std::pair< Key, Value > > list):
+    BSTree()
+  {
+    for (auto it = list.begin(); it != list.end(); ++it)
+    {
+      add(it->first, it->second);
+    }
   }
 
   #undef tree_template
