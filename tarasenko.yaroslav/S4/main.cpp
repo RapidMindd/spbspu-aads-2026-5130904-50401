@@ -115,7 +115,14 @@ void complement(std::istream& in, std::ostream&, Datasets& datasets)
       result.add(it->first, it->second);
     }
   }
-  datasets.add(newName, result);
+  if (datasets.has(newName))
+  {
+    datasets.get(newName) = result;
+  }
+  else
+  {
+    datasets.add(newName, result);
+  }
 }
 
 void intersect(std::istream& in, std::ostream&, Datasets& datasets)
@@ -139,7 +146,14 @@ void intersect(std::istream& in, std::ostream&, Datasets& datasets)
       result.add(it->first, it->second);
     }
   }
-  datasets.add(newName, result);
+  if (datasets.has(newName))
+  {
+    datasets.get(newName) = result;
+  }
+  else
+  {
+    datasets.add(newName, result);
+  }
 }
 
 void Union(std::istream& in, std::ostream&, Datasets& datasets)
@@ -164,7 +178,14 @@ void Union(std::istream& in, std::ostream&, Datasets& datasets)
   {
     result.add(it->first, it->second);
   }
-  datasets.add(newName, result);
+  if (datasets.has(newName))
+  {
+    datasets.get(newName) = result;
+  }
+  else
+  {
+    datasets.add(newName, result);
+  }
 }
 
 int main(int argc, char** argv)
