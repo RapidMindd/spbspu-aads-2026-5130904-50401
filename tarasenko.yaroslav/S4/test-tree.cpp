@@ -118,3 +118,102 @@ BOOST_AUTO_TEST_CASE(move_assignment)
     BOOST_TEST(copy.get(i) == i);
   }
 }
+
+BOOST_AUTO_TEST_CASE(dereference)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  BOOST_TEST(tree.begin()->first == 1);
+  BOOST_TEST(tree.cbegin()->first == 1);
+  BOOST_CHECK(*(tree.begin()) == std::make_pair(1, 1));
+  BOOST_CHECK(*(tree.cbegin()) == std::make_pair(1, 1));
+}
+
+BOOST_AUTO_TEST_CASE(forward_iteratrion)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  int i = 1;
+  for (auto it = tree.begin(); it != tree.end(); ++it)
+  {
+    BOOST_TEST(it->first == i);
+    ++i;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(const_forward_iteratrion)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  const Tree ctree = tree;
+  int i = 1;
+  for (auto it = ctree.begin(); it != ctree.end(); ++it)
+  {
+    BOOST_TEST(it->first == i);
+    ++i;
+  }
+  i = 1;
+  for (auto it = ctree.cbegin(); it != ctree.cend(); ++it)
+  {
+    BOOST_TEST(it->first == i);
+    ++i;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(backward_iteratrion)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  int i = 4;
+  for (auto it = tree.end(); it != tree.begin();)
+  {
+    --it;
+    BOOST_TEST(it->first == i);
+    --i;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(const_backward_iteratrion)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  const Tree ctree = tree;
+  int i = 4;
+  for (auto it = ctree.end(); it != ctree.begin();)
+  {
+    --it;
+    BOOST_TEST(it->first == i);
+    --i;
+  }
+  i = 4;
+  for (auto it = ctree.cend(); it != ctree.cbegin();)
+  {
+    --it;
+    BOOST_TEST(it->first == i);
+    --i;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(increment_and_decrement)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  auto it = tree.begin();
+  ++it;
+  BOOST_TEST(it->first == 2);
+  --it;
+  BOOST_TEST(it->first == 1);
+  BOOST_TEST(it++->first == 1);
+  BOOST_TEST(it->first == 2);
+  BOOST_TEST(it--->first == 2);
+  BOOST_TEST(it->first == 1);
+}
+
+BOOST_AUTO_TEST_CASE(const_increment_and_decrement)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  const Tree ctree = tree;
+  auto it = ctree.begin();
+  ++it;
+  BOOST_TEST(it->first == 2);
+  --it;
+  BOOST_TEST(it->first == 1);
+  BOOST_TEST(it++->first == 1);
+  BOOST_TEST(it->first == 2);
+  BOOST_TEST(it--->first == 2);
+  BOOST_TEST(it->first == 1);
+}

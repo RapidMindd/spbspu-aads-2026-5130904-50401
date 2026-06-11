@@ -117,6 +117,7 @@ namespace tarasenko
     detail::Node< Key, Value >* root_ = nullptr;
 
   private:
+    friend class BSTree< Key, Value >;
     BSTIterator(detail::Node< Key, Value >* node, detail::Node< Key, Value >* root) noexcept;
   };
 
@@ -143,6 +144,7 @@ namespace tarasenko
     detail::Node< Key, Value >* root_ = nullptr;
 
   private:
+    friend class BSTree< Key, Value >;
     BSTConstIterator(detail::Node< Key, Value >* node, detail::Node< Key, Value >* root) noexcept;
   };
 
@@ -621,37 +623,37 @@ namespace tarasenko
   tree_template
   tree_iterator tree_type::begin()
   {
-    return tree_iterator(root_, detail::fallLeft(root_));
+    return tree_iterator(detail::fallLeft(root_), root_);
   }
 
   tree_template
   tree_const_iterator tree_type::begin() const
   {
-    return tree_const_iterator(root_, detail::fallLeft(root_));
+    return tree_const_iterator(detail::fallLeft(root_), root_);
   }
 
   tree_template
   tree_iterator tree_type::end()
   {
-    return tree_iterator(root_, nullptr);
+    return tree_iterator(nullptr, root_);
   }
 
   tree_template
   tree_const_iterator tree_type::end() const
   {
-    return tree_const_iterator(root_, nullptr);
+    return tree_const_iterator(nullptr, root_);
   }
 
   tree_template
   tree_const_iterator tree_type::cbegin() const
   {
-    return tree_const_iterator(root_, detail::fallLeft(root_));
+    return tree_const_iterator(detail::fallLeft(root_), root_);
   }
 
   tree_template
   tree_const_iterator tree_type::cend() const
   {
-    return tree_const_iterator(root_, nullptr);
+    return tree_const_iterator(nullptr, root_);
   }
 
   #undef tree_template
