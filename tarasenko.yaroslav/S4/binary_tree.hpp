@@ -258,7 +258,7 @@ namespace tarasenko
       --size_;
       return true;
     }
-    tree_node* next = fallLeft(node->right_);
+    tree_node* next = detail::fallLeft(node->right_);
     if (next->parent_ != node)
     {
       replace(next, next->right_);
@@ -527,14 +527,14 @@ namespace tarasenko
   iter_template
   tree_iterator& tree_iterator::operator++()
   {
-    node_ = next(node_);
+    node_ = detail::next(node_);
     return *this;
   }
 
   iter_template
   tree_const_iterator& tree_const_iterator::operator++()
   {
-    node_ = next(node_);
+    node_ = detail::next(node_);
     return *this;
   }
 
@@ -557,14 +557,24 @@ namespace tarasenko
   iter_template
   tree_iterator& tree_iterator::operator--()
   {
-    node_ = prev(node_);
+    if (!node_)
+    {
+      node_ = detail::fallRight(root_);
+      return *this;
+    }
+    node_ = detail::prev(node_);
     return *this;
   }
 
   iter_template
   tree_const_iterator& tree_const_iterator::operator--()
   {
-    node_ = prev(node_);
+    if (!node_)
+    {
+      node_ = detail::fallRight(root_);
+      return *this;
+    }
+    node_ = detail::prev(node_);
     return *this;
   }
 
@@ -606,6 +616,42 @@ namespace tarasenko
   bool tree_const_iterator::operator!=(const tree_const_iterator& rhs) const
   {
     return !(*this == rhs);
+  }
+
+  tree_template
+  tree_iterator tree_type::begin()
+  {
+    return tree_iterator(root_, detail::fallLeft(root_));
+  }
+
+  tree_template
+  tree_const_iterator tree_type::begin() const
+  {
+    return tree_const_iterator(root_, detail::fallLeft(root_));
+  }
+
+  tree_template
+  tree_iterator tree_type::end()
+  {
+    return tree_iterator(root_, nullptr);
+  }
+
+  tree_template
+  tree_const_iterator tree_type::end() const
+  {
+    return tree_const_iterator(root_, nullptr);
+  }
+
+  tree_template
+  tree_const_iterator tree_type::cbegin() const
+  {
+    return tree_const_iterator(root_, detail::fallLeft(root_));
+  }
+
+  tree_template
+  tree_const_iterator tree_type::cend() const
+  {
+    return tree_const_iterator(root_, nullptr);
   }
 
   #undef tree_template
