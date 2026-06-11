@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include "binary_tree.hpp"
@@ -93,6 +94,30 @@ void print(std::istream& in, std::ostream& out, Datasets& datasets)
   out << '\n';
 }
 
+void complement(std::istream& in, std::ostream&, Datasets& datasets)
+{
+  std::string newName;
+  std::string lhsName;
+  std::string rhsName;
+  in >> newName >> lhsName >> rhsName;
+  if (!in || !datasets.has(lhsName) || !datasets.has(rhsName))
+  {
+    throw std::runtime_error("Invalid command");
+  }
+
+  const Dataset& lhs = datasets.get(lhsName);
+  const Dataset& rhs = datasets.get(rhsName);
+  Dataset result;
+  for (auto it = lhs.begin(); it != lhs.end(); ++it)
+  {
+    if (!rhs.has(it->first))
+    {
+      result.add(it->first, it->second);
+    }
+  }
+  datasets.add(newName, result);
+}
+
 int main(int argc, char** argv)
 {
   if (argc != 2)
@@ -105,6 +130,7 @@ int main(int argc, char** argv)
   using cmd_t = void(*)(std::istream&, std::ostream&, Datasets&);
   BSTree< std::string, cmd_t > cmds;
   cmds.add("print", print);
+  cmds.add("complement", complement);
 
   std::string cmd;
   while (std::cin >> cmd)
