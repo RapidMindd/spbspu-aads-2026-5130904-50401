@@ -229,3 +229,77 @@ BOOST_AUTO_TEST_CASE(height)
   BOOST_TEST(tree.height(++it) == 1);
   BOOST_TEST(tree.height(++it) == 2);
 }
+
+BOOST_AUTO_TEST_CASE(rotate_left)
+{
+  Tree tree = {{2, 2}, {1, 1}, {3, 3}};
+  auto it = tree.begin();
+  ++++it;
+  auto root = tree.rotateLeft(it);
+  BOOST_TEST(root->first == 3);
+  BOOST_TEST(tree.height(root) == 3);
+  BOOST_TEST(tree.height() == 3);
+  BOOST_TEST(tree.height(++tree.begin()) == 2);
+  BOOST_TEST(tree.getSize() == 3);
+  int i = 1;
+  for (auto pos = tree.begin(); pos != tree.end(); ++pos)
+  {
+    BOOST_TEST(pos->first == i);
+    ++i;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(rotate_right)
+{
+  Tree tree = {{2, 2}, {1, 1}, {3, 3}};
+  auto root = tree.rotateRight(tree.begin());
+  BOOST_TEST(root->first == 1);
+  BOOST_TEST(tree.height(root) == 3);
+  BOOST_TEST(tree.height() == 3);
+  BOOST_TEST(tree.height(++tree.begin()) == 2);
+  BOOST_TEST(tree.getSize() == 3);
+  int i = 1;
+  for (auto pos = tree.begin(); pos != tree.end(); ++pos)
+  {
+    BOOST_TEST(pos->first == i);
+    ++i;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(rotate_large_left)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  auto it = tree.begin();
+  ++++it;
+  auto root = tree.rotateLargeLeft(it);
+  BOOST_TEST(root->first == 3);
+  BOOST_TEST(tree.height(root) == 3);
+  BOOST_TEST(tree.height() == 3);
+  BOOST_TEST(tree.height(++tree.begin()) == 2);
+  BOOST_TEST(tree.getSize() == 4);
+  int i = 1;
+  for (auto pos = tree.begin(); pos != tree.end(); ++pos)
+  {
+    BOOST_TEST(pos->first == i);
+    ++i;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(rotate_large_right)
+{
+  Tree tree = {{4, 4}, {2, 2}, {5, 5}, {3, 3}};
+  auto it = tree.begin();
+  ++it;
+  auto root = tree.rotateLargeRight(it);
+  BOOST_TEST(root->first == 3);
+  BOOST_TEST(tree.height(root) == 3);
+  BOOST_TEST(tree.height() == 3);
+  BOOST_TEST(tree.height(++tree.begin()) == 3);
+  BOOST_TEST(tree.getSize() == 4);
+  int i = 2;
+  for (auto pos = tree.begin(); pos != tree.end(); ++pos)
+  {
+    BOOST_TEST(pos->first == i);
+    ++i;
+  }
+}
