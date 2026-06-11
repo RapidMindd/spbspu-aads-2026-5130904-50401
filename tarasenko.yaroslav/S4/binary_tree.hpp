@@ -480,7 +480,7 @@ namespace tarasenko
   template< class Key, class Value >
   tree_node* detail::fallLeft(tree_node* node)
   {
-    while (node->left_)
+    while (node && node->left_)
     {
       node = node->left_;
     }
@@ -507,7 +507,7 @@ namespace tarasenko
   template< class Key, class Value >
   tree_node* detail::fallRight(tree_node* node)
   {
-    while (node->right_)
+    while (node && node->right_)
     {
       node = node->right_;
     }
