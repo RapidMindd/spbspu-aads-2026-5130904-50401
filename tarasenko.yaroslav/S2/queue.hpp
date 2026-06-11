@@ -13,7 +13,9 @@ namespace tarasenko
     void push(T&& rhs);
     void pop();
     const T& front() const;
+    T& front();
     const T& back() const;
+    T& back();
     size_t size() const noexcept;
     bool empty() const noexcept;
     void clear() noexcept;
@@ -47,7 +49,19 @@ namespace tarasenko
   }
 
   template< class T >
+  T& Queue< T >::front()
+  {
+    return data_.front();
+  }
+
+  template< class T >
   const T& Queue< T >::back() const
+  {
+    return data_.back();
+  }
+
+  template< class T >
+  T& Queue< T >::back()
   {
     return data_.back();
   }

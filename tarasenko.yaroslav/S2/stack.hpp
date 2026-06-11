@@ -11,8 +11,9 @@ namespace tarasenko
   public:
     void push(const T& rhs);
     void push(T&& rhs);
-    T pop();
+    void pop();
     const T& top() const;
+    T& top();
     size_t size() const noexcept;
     bool empty() const noexcept;
     void clear() noexcept;
@@ -34,15 +35,19 @@ namespace tarasenko
   }
 
   template< class T >
-  T Stack< T >::pop()
+  void Stack< T >::pop()
   {
-    T value = data_.front();
     data_.pop_front();
-    return value;
   }
 
   template< class T >
   const T& Stack< T >::top() const
+  {
+    return data_.front();
+  }
+
+  template< class T >
+  T& Stack< T >::top()
   {
     return data_.front();
   }

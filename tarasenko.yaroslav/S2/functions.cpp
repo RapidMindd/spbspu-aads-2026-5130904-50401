@@ -61,7 +61,9 @@ namespace tarasenko
     {
       throw std::logic_error("Incorrect expression");
     }
-    return operands_stack.pop();
+    long long tmp = operands_stack.top();
+    operands_stack.pop();
+    return tmp;
   }
 
   Queue< Token > stringToQueue(const std::string& line)
@@ -214,19 +216,22 @@ namespace tarasenko
     {
       throw std::logic_error("Empty operations stack");
     }
-    Token operation = operations_stack.pop();
+    Token operation = operations_stack.top();
+    operations_stack.pop();
 
     if (operands_stack.empty())
     {
       throw std::logic_error("Empty operands stack");
     }
-    long long right_operand = operands_stack.pop();
+    long long right_operand = operands_stack.top();
+    operands_stack.pop();
 
     if (operands_stack.empty())
     {
       throw std::logic_error("Empty operands stack");
     }
-    long long left_operand = operands_stack.pop();
+    long long left_operand = operands_stack.top();
+    operands_stack.pop();
     long long result;
     switch (operation.operation)
     {
@@ -267,11 +272,13 @@ namespace tarasenko
     }
     if (!results.empty())
     {
-      std::cout << results.pop();
+      std::cout << results.top();
+      results.pop();
     }
     while (!results.empty())
     {
-      std::cout << " " << results.pop();
+      std::cout << " " << results.top();
+      results.pop();
     }
     std::cout << "\n";
   }

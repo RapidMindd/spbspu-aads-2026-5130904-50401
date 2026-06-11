@@ -28,7 +28,8 @@ BOOST_AUTO_TEST_CASE(stack_pop)
   }
   for (size_t i = 0; i < 10; ++i)
   {
-    BOOST_TEST(stack.pop() == 9 - i);
+    BOOST_TEST(stack.top() == 9 - i);
+    stack.pop();
     BOOST_TEST(stack.size() == 10 - (i + 1));
   }
 }
