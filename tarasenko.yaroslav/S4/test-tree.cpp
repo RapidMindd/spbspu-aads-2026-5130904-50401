@@ -217,3 +217,15 @@ BOOST_AUTO_TEST_CASE(const_increment_and_decrement)
   BOOST_TEST(it--->first == 2);
   BOOST_TEST(it->first == 1);
 }
+
+BOOST_AUTO_TEST_CASE(height)
+{
+  Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
+  BOOST_TEST(tree.height() == 3);
+  auto it = tree.begin();
+  BOOST_TEST(tree.height(tree.cbegin()) == 1);
+  BOOST_TEST(tree.height(it) == 1);
+  BOOST_TEST(tree.height(++it) == 3);
+  BOOST_TEST(tree.height(++it) == 1);
+  BOOST_TEST(tree.height(++it) == 2);
+}

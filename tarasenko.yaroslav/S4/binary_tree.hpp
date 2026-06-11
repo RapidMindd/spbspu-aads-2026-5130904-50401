@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <utility>
 #include <initializer_list>
+#include <algorithm>
 #include "less_to.hpp"
 
 namespace tarasenko
@@ -34,6 +35,8 @@ namespace tarasenko
     Node< Key, Value >* fallLeft(Node< Key, Value >* node);
     template< class Key, class Value >
     Node< Key, Value >* fallRight(Node< Key, Value >* node);
+    template< class Key, class Value >
+    size_t height(Node< Key, Value >* node);
   }
 
   template< class Key, class Value, class Compare = LessTo< Key > >
@@ -118,6 +121,7 @@ namespace tarasenko
 
   private:
     friend class BSTree< Key, Value >;
+    friend class BSTConstIterator< Key, Value >;
     BSTIterator(detail::Node< Key, Value >* node, detail::Node< Key, Value >* root) noexcept;
   };
 
@@ -126,6 +130,7 @@ namespace tarasenko
   {
   public:
     BSTConstIterator();
+    BSTConstIterator(const BSTIterator< Key, Value >& it);
 
     const std::pair< Key, Value >& operator*() const;
     const std::pair< Key, Value >* operator->() const;
@@ -655,6 +660,34 @@ namespace tarasenko
   {
     return tree_const_iterator(nullptr, root_);
   }
+
+  template< class Key, class Value >
+  size_t detail::height(tree_node* node)
+  {
+    if (!node)
+    {
+      return 0;
+    }
+    return std::max(height(node->left_), height(node->right_)) + 1;
+  }
+
+  tree_template
+  size_t tree_type::height(tree_const_iterator it) const
+  {
+    return detail::height(it.node_);
+  }
+
+  tree_template
+  size_t tree_type::height() const
+  {
+    return detail::height(root_);
+  }
+
+  iter_template
+  tree_const_iterator::BSTConstIterator(const tree_iterator& it):
+    node_(it.node_),
+    root_(it.root_)
+  {}
 
   #undef tree_template
   #undef tree_type
