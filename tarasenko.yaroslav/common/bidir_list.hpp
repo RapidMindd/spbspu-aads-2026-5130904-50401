@@ -12,9 +12,9 @@ namespace tarasenko
     template< class T >
     struct Node
     {
-      T val_;
-      Node< T >* next_;
-      Node< T >* prev_;
+      T val;
+      Node< T >* next;
+      Node< T >* prev;
     };
   }
 
@@ -25,7 +25,7 @@ namespace tarasenko
   class ListIter
   {
   public:
-    ListIter();
+    ListIter() noexcept;
     bool operator==(const ListIter< T >& it) const noexcept;
     bool operator!=(const ListIter< T >& it) const noexcept;
     T& operator*();
@@ -45,7 +45,7 @@ namespace tarasenko
   class ListConstIter
   {
   public:
-    ListConstIter();
+    ListConstIter() noexcept;
     bool operator==(const ListConstIter< T >& it) const noexcept;
     bool operator!=(const ListConstIter< T >& it) const noexcept;
     const T& operator*() const;
@@ -160,13 +160,13 @@ namespace tarasenko
   }
 
   template< class T >
-  ListIter< T >::ListIter():
+  ListIter< T >::ListIter() noexcept:
     ptr_(nullptr),
     owner_(nullptr)
   {}
 
   template< class T >
-  ListConstIter< T >::ListConstIter():
+  ListConstIter< T >::ListConstIter() noexcept:
     ptr_(nullptr),
     owner_(nullptr)
   {}
@@ -234,38 +234,38 @@ namespace tarasenko
   template< class T >
   T& ListIter< T >::operator*()
   {
-    return ptr_->val_;
+    return ptr_->val;
   }
 
   template< class T >
   const T& ListConstIter< T >::operator*() const
   {
-    return ptr_->val_;
+    return ptr_->val;
   }
 
   template< class T >
   T* ListIter< T >::operator->()
   {
-    return &ptr_->val_;
+    return std::addressof(ptr_->val);
   }
 
   template< class T >
   const T* ListConstIter< T >::operator->() const
   {
-    return &ptr_->val_;
+    return std::addressof(ptr_->val);
   }
 
   template< class T >
   ListIter< T >& ListIter< T >::operator++() noexcept
   {
-    ptr_ = ptr_->next_;
+    ptr_ = ptr_->next;
     return *this;
   }
 
   template< class T >
   ListConstIter< T >& ListConstIter< T >::operator++() noexcept
   {
-    ptr_ = ptr_->next_;
+    ptr_ = ptr_->next;
     return *this;
   }
 
@@ -273,7 +273,7 @@ namespace tarasenko
   ListIter< T > ListIter< T >::operator++(int) noexcept
   {
     ListIter< T > copy(*this);
-    ptr_ = ptr_->next_;
+    ptr_ = ptr_->next;
     return copy;
   }
 
@@ -281,7 +281,7 @@ namespace tarasenko
   ListConstIter< T > ListConstIter< T >::operator++(int) noexcept
   {
     ListConstIter< T > copy(*this);
-    ptr_ = ptr_->next_;
+    ptr_ = ptr_->next;
     return copy;
   }
 
@@ -293,7 +293,7 @@ namespace tarasenko
       ptr_ = owner_->tail_;
       return *this;
     }
-    ptr_ = ptr_->prev_;
+    ptr_ = ptr_->prev;
     return *this;
   }
 
@@ -305,7 +305,7 @@ namespace tarasenko
       ptr_ = owner_->tail_;
       return *this;
     }
-    ptr_ = ptr_->prev_;
+    ptr_ = ptr_->prev;
     return *this;
   }
 
@@ -318,7 +318,7 @@ namespace tarasenko
       return *this;
     }
     ListIter< T > copy(*this);
-    ptr_ = ptr_->prev_;
+    ptr_ = ptr_->prev;
     return copy;
   }
 
@@ -331,7 +331,7 @@ namespace tarasenko
       return *this;
     }
     ListConstIter< T > copy(*this);
-    ptr_ = ptr_->prev_;
+    ptr_ = ptr_->prev;
     return copy;
   }
 
@@ -344,36 +344,36 @@ namespace tarasenko
   template< class T >
   const T& BidirList< T >::front() const
   {
-    return head_->val_;
+    return head_->val;
   }
 
   template< class T >
   const T& BidirList< T >::back() const
   {
-    return tail_->val_;
+    return tail_->val;
   }
 
   template< class T >
   T& BidirList< T >::front()
   {
-    return head_->val_;
+    return head_->val;
   }
 
   template< class T >
   T& BidirList< T >::back()
   {
-    return tail_->val_;
+    return tail_->val;
   }
 
   template< class T >
   ListIter< T > BidirList< T >::erase(ListIter< T > it) noexcept
   {
-    detail::Node< T >* next = it.ptr_->next_;
-    detail::Node< T >* prev = it.ptr_->prev_;
+    detail::Node< T >* next = it.ptr_->next;
+    detail::Node< T >* prev = it.ptr_->prev;
     delete it.ptr_;
     if (next != nullptr)
     {
-      next->prev_ = prev;
+      next->prev = prev;
     }
     else
     {
@@ -382,7 +382,7 @@ namespace tarasenko
 
     if (prev != nullptr)
     {
-      prev->next_ = next;
+      prev->next = next;
     }
     else
     {
@@ -437,23 +437,23 @@ namespace tarasenko
     }
     else if (it.ptr_ == nullptr)
     {
-      new_node->prev_ = tail_;
-      tail_->next_ = new_node;
+      new_node->prev = tail_;
+      tail_->next = new_node;
       tail_ = new_node;
     }
     else
     {
-      new_node->next_ = it.ptr_;
-      new_node->prev_ = it.ptr_->prev_;
-      if (it.ptr_->prev_ == nullptr)
+      new_node->next = it.ptr_;
+      new_node->prev = it.ptr_->prev;
+      if (it.ptr_->prev == nullptr)
       {
-        head_->prev_ = new_node;
+        head_->prev = new_node;
         head_ = new_node;
       }
       else
       {
-        it.ptr_->prev_->next_ = new_node;
-        it.ptr_->prev_ = new_node;
+        it.ptr_->prev->next = new_node;
+        it.ptr_->prev = new_node;
       }
     }
     size_++;
