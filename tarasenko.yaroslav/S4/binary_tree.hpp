@@ -689,6 +689,76 @@ namespace tarasenko
     root_(it.root_)
   {}
 
+  tree_template
+  tree_const_iterator tree_type::rotateLeft(tree_const_iterator it)
+  {
+    detail::Node< Key, Value >* p = it.node_;
+    detail::Node< Key, Value >* q = p->parent_;
+    q->right_ = p->left_;
+    if (p->left_)
+    {
+      p->left_->parent_ = q;
+    }
+    p->parent_ = q->parent_;
+    if (!q->parent_)
+    {
+      root_ = p;
+    }
+    else if (q == q->parent_->left_)
+    {
+      q->parent_->left_ = p;
+    }
+    else
+    {
+      q->parent_->right_ = p;
+    }
+    q->parent_ = p;
+    p->left_ = q;
+    return tree_const_iterator(p, root_);
+  }
+
+  tree_template
+  tree_const_iterator tree_type::rotateRight(tree_const_iterator it)
+  {
+    detail::Node< Key, Value >* p = it.node_;
+    detail::Node< Key, Value >* q = p->parent_;
+    q->left_ = p->right_;
+    if (p->right_)
+    {
+      p->right_->parent_ = q;
+    }
+    p->parent_ = q->parent_;
+    if (!q->parent_)
+    {
+      root_ = p;
+    }
+    else if (q == q->parent_->left_)
+    {
+      q->parent_->left_ = p;
+    }
+    else
+    {
+      q->parent_->right_ = p;
+    }
+    q->parent_ = p;
+    p->right_ = q;
+    return tree_const_iterator(p, root_);
+  }
+
+  tree_template
+  tree_const_iterator tree_type::rotateLargeLeft(tree_const_iterator it)
+  {
+    it = rotateRight(it);
+    return rotateLeft(it);
+  }
+
+  tree_template
+  tree_const_iterator tree_type::rotateLargeRight(tree_const_iterator it)
+  {
+    it = rotateLeft(it);
+    return rotateRight(it);
+  }
+
   #undef tree_template
   #undef tree_type
   #undef tree_iterator
