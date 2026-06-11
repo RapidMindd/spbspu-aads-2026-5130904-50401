@@ -30,17 +30,28 @@ BOOST_AUTO_TEST_CASE(string_to_queue)
 
   BOOST_TEST(queue.size() == 11);
 
-  checkToken(queue.pop(), TokenType::left_parenthe, 0, 0, 0);
-  checkToken(queue.pop(), TokenType::num, 1, 0, 0);
-  checkToken(queue.pop(), TokenType::operation, 0, '+', 1);
-  checkToken(queue.pop(), TokenType::num, 2, 0, 0);
-  checkToken(queue.pop(), TokenType::right_parenthe, 0, 0, 0);
-  checkToken(queue.pop(), TokenType::operation, 0, '*', 2);
-  checkToken(queue.pop(), TokenType::left_parenthe, 0, 0, 0);
-  checkToken(queue.pop(), TokenType::num, 3, 0, 0);
-  checkToken(queue.pop(), TokenType::operation, 0, '-', 1);
-  checkToken(queue.pop(), TokenType::num, 4, 0, 0);
-  checkToken(queue.pop(), TokenType::right_parenthe, 0, 0, 0);
+  checkToken(queue.front(), TokenType::left_parenthe, 0, 0, 0);
+  queue.pop();
+  checkToken(queue.front(), TokenType::num, 1, 0, 0);
+  queue.pop();
+  checkToken(queue.front(), TokenType::operation, 0, '+', 1);
+  queue.pop();
+  checkToken(queue.front(), TokenType::num, 2, 0, 0);
+  queue.pop();
+  checkToken(queue.front(), TokenType::right_parenthe, 0, 0, 0);
+  queue.pop();
+  checkToken(queue.front(), TokenType::operation, 0, '*', 2);
+  queue.pop();
+  checkToken(queue.front(), TokenType::left_parenthe, 0, 0, 0);
+  queue.pop();
+  checkToken(queue.front(), TokenType::num, 3, 0, 0);
+  queue.pop();
+  checkToken(queue.front(), TokenType::operation, 0, '-', 1);
+  queue.pop();
+  checkToken(queue.front(), TokenType::num, 4, 0, 0);
+  queue.pop();
+  checkToken(queue.front(), TokenType::right_parenthe, 0, 0, 0);
+  queue.pop();
 
   BOOST_TEST(queue.empty());
 }

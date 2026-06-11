@@ -16,7 +16,8 @@ namespace tarasenko
     Stack< Token > operations_stack;
     while(!input_queue.empty())
     {
-      Token cur = input_queue.pop();
+      Token cur = input_queue.front();
+      input_queue.pop();
       if (cur.type == TokenType::num)
       {
         operands_stack.push(cur.value);

@@ -31,7 +31,8 @@ BOOST_AUTO_TEST_CASE(queue_pop)
   }
   for (size_t i = 0; i < 10; ++i)
   {
-    BOOST_TEST(queue.pop() == i);
+    BOOST_TEST(queue.front() == i);
+    queue.pop();
     BOOST_TEST(queue.size() == 10 - (i + 1));
   }
 }
