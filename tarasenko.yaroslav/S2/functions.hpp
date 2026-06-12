@@ -1,6 +1,7 @@
 #ifndef FUNCTIONS_HPP
 #define FUNCTIONS_HPP
 
+#include <limits>
 #include <string>
 #include "queue.hpp"
 #include "stack.hpp"
@@ -23,9 +24,11 @@ namespace tarasenko
     int priority;
   };
 
-  long long calculate(std::string line);
-  tarasenko::Queue< Token > stringToQueue(const std::string& line);
-  long long getNumber(const std::string& line, size_t& pos);
+  long long calculate(const std::string& line);
+  tarasenko::Queue< std::string > stringToQueue(const std::string& line);
+  Token stringToToken(const std::string& str);
+  bool isOperation(const std::string& str);
+  int getPriority(const std::string& str);
   using tokenStack = Stack< Token >;
   using numStack = Stack< long long >;
   void makeTopOperation(tokenStack& operations_stack, numStack& operands_stack);
@@ -36,8 +39,8 @@ namespace tarasenko
   long long divide(long long a, long long b);
   long long mod(long long a, long long b);
   long long rightShift(long long a, long long b);
-
-  void readStreamAndPrintResults(std::istream& stream);
+  const long long MAX = std::numeric_limits< long long >::max();
+  const long long MIN = std::numeric_limits< long long >::min();
 }
 
 #endif

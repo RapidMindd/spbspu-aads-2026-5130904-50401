@@ -1,6 +1,6 @@
 #include <iostream>
 #include <limits>
-#include "bidir_list.hpp"
+#include <bidir_list.hpp>
 
 int main()
 {
