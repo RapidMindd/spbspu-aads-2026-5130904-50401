@@ -23,7 +23,7 @@ namespace tarasenko
     int priority;
   };
 
-  long long calculate(std::string line);
+  long long calculate(const std::string& line);
   tarasenko::Queue< Token > stringToQueue(const std::string& line);
   long long getNumber(const std::string& line, size_t& pos);
   using tokenStack = Stack< Token >;

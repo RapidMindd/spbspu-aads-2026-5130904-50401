@@ -1,6 +1,7 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
+#include <utility>
 #include "bidir_list.hpp"
 
 namespace tarasenko
@@ -31,7 +32,7 @@ namespace tarasenko
   template< class T >
   void Stack< T >::push(T&& rhs)
   {
-    data_.push_front(std::move(rhs));
+    data_.push_front(std::forward< T >(rhs));
   }
 
   template< class T >

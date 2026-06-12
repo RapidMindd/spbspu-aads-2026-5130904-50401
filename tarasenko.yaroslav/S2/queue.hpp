@@ -1,6 +1,7 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
+#include <utility>
 #include "bidir_list.hpp"
 
 namespace tarasenko
@@ -33,7 +34,7 @@ namespace tarasenko
   template< class T >
   void Queue< T >::push(T&& rhs)
   {
-    data_.push_back(std::move(rhs));
+    data_.push_back(std::forward< T >(rhs));
   }
 
   template< class T >

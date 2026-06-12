@@ -1,15 +1,15 @@
 #include "functions.hpp"
-#include "stack.hpp"
-#include <stdexcept>
-#include <limits>
 #include <iostream>
+#include <limits>
+#include <stdexcept>
+#include "stack.hpp"
 
 const long long MAX = std::numeric_limits< long long >::max();
 const long long MIN = std::numeric_limits< long long >::min();
 
 namespace tarasenko
 {
-  long long calculate(std::string line)
+  long long calculate(const std::string& line)
   {
     auto input_queue = stringToQueue(line);
     Stack< long long > operands_stack;

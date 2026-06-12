@@ -1,7 +1,7 @@
-#include <iostream>
 #include <fstream>
-#include "stack.hpp"
+#include <iostream>
 #include "functions.hpp"
+#include "stack.hpp"
 
 int main(int argc, char** argv)
 {
