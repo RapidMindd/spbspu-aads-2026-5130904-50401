@@ -38,6 +38,9 @@ namespace tarasenko
   long long rightShift(long long a, long long b);
 
   void readStreamAndPrintResults(std::istream& stream);
+
+  const long long MAX = std::numeric_limits< long long >::max();
+  const long long MIN = std::numeric_limits< long long >::min();
 }
 
 #endif
