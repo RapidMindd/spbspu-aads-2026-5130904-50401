@@ -1,6 +1,8 @@
 #ifndef FUNCTIONS_HPP
 #define FUNCTIONS_HPP
 
+#include <iosfwd>
+#include <limits>
 #include <string>
 #include "queue.hpp"
 #include "stack.hpp"
@@ -24,7 +26,8 @@ namespace tarasenko
   };
 
   long long calculate(const std::string& line);
-  tarasenko::Queue< Token > stringToQueue(const std::string& line);
+  tarasenko::Queue< std::string > stringToQueue(const std::string& line);
+  Token stringToToken(const std::string& str);
   long long getNumber(const std::string& line, size_t& pos);
   using tokenStack = Stack< Token >;
   using numStack = Stack< long long >;

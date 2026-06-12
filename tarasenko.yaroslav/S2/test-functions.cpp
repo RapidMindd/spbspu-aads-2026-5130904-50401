@@ -26,34 +26,42 @@ void checkToken(const Token& token, TokenType type, long long value, char operat
 BOOST_AUTO_TEST_CASE(string_to_queue)
 {
   std::string s = "( 1 + 2 ) * ( 3 - 4 )";
-  Queue< Token > queue = stringToQueue(s);
+  Queue< std::string > queue = stringToQueue(s);
 
   BOOST_TEST(queue.size() == 11);
 
-  checkToken(queue.front(), TokenType::left_parenthe, 0, 0, 0);
+  BOOST_TEST(queue.front() == "(");
   queue.pop();
-  checkToken(queue.front(), TokenType::num, 1, 0, 0);
+  BOOST_TEST(queue.front() == "1");
   queue.pop();
-  checkToken(queue.front(), TokenType::operation, 0, '+', 1);
+  BOOST_TEST(queue.front() == "+");
   queue.pop();
-  checkToken(queue.front(), TokenType::num, 2, 0, 0);
+  BOOST_TEST(queue.front() == "2");
   queue.pop();
-  checkToken(queue.front(), TokenType::right_parenthe, 0, 0, 0);
+  BOOST_TEST(queue.front() == ")");
   queue.pop();
-  checkToken(queue.front(), TokenType::operation, 0, '*', 2);
+  BOOST_TEST(queue.front() == "*");
   queue.pop();
-  checkToken(queue.front(), TokenType::left_parenthe, 0, 0, 0);
+  BOOST_TEST(queue.front() == "(");
   queue.pop();
-  checkToken(queue.front(), TokenType::num, 3, 0, 0);
+  BOOST_TEST(queue.front() == "3");
   queue.pop();
-  checkToken(queue.front(), TokenType::operation, 0, '-', 1);
+  BOOST_TEST(queue.front() == "-");
   queue.pop();
-  checkToken(queue.front(), TokenType::num, 4, 0, 0);
+  BOOST_TEST(queue.front() == "4");
   queue.pop();
-  checkToken(queue.front(), TokenType::right_parenthe, 0, 0, 0);
+  BOOST_TEST(queue.front() == ")");
   queue.pop();
 
   BOOST_TEST(queue.empty());
+}
+
+BOOST_AUTO_TEST_CASE(string_to_token)
+{
+  checkToken(stringToToken("("), TokenType::left_parenthe, 0, 0, 0);
+  checkToken(stringToToken("1"), TokenType::num, 1, 0, 0);
+  checkToken(stringToToken("+"), TokenType::operation, 0, '+', 1);
+  checkToken(stringToToken(">>"), TokenType::operation, 0, '>', 3);
 }
 
 BOOST_AUTO_TEST_CASE(calculate_valid_expression)

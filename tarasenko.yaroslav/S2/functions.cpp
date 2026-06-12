@@ -1,7 +1,10 @@
 #include "functions.hpp"
+
+#include <cctype>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+
 #include "stack.hpp"
 
 long long tarasenko::calculate(const std::string& line)
@@ -11,7 +14,7 @@ long long tarasenko::calculate(const std::string& line)
   Stack< Token > operations_stack;
   while (!input_queue.empty())
   {
-    Token cur = input_queue.front();
+    Token cur = stringToToken(input_queue.front());
     input_queue.pop();
     if (cur.type == TokenType::num)
     {
@@ -61,58 +64,78 @@ long long tarasenko::calculate(const std::string& line)
   return tmp;
 }
 
-tarasenko::Queue< tarasenko::Token > tarasenko::stringToQueue(const std::string& line)
+tarasenko::Queue< std::string > tarasenko::stringToQueue(const std::string& line)
 {
-  Queue< Token > queue;
-  for (size_t i = 0; i < line.size(); ++i)
+  Queue< std::string > queue;
+  size_t i = 0;
+  while (i < line.size())
   {
-    if (std::isdigit(line[i]))
+    if (line[i] == ' ')
     {
-      long long num = getNumber(line, i);
-      queue.push(Token{TokenType::num, num, 0, 0});
-      --i;
+      ++i;
     }
-    else
+    size_t start = i;
+    while (i < line.size() && line[i] != ' ')
     {
-      switch (line[i])
-      {
-        case ' ':
-          break;
-        case '(':
-          queue.push(Token{TokenType::left_parenthe, 0, 0, 0});
-          break;
-        case ')':
-          queue.push(Token{TokenType::right_parenthe, 0, 0, 0});
-          break;
-        case '+':
-          queue.push(Token{TokenType::operation, 0, '+', 1});
-          break;
-        case '-':
-          queue.push(Token{TokenType::operation, 0, '-', 1});
-          break;
-        case '*':
-          queue.push(Token{TokenType::operation, 0, '*', 2});
-          break;
-        case '/':
-          queue.push(Token{TokenType::operation, 0, '/', 2});
-          break;
-        case '%':
-          queue.push(Token{TokenType::operation, 0, '%', 2});
-          break;
-        case '>':
-          if (i + 1 >= line.size() || line[i + 1] != '>')
-          {
-            throw std::logic_error("Incorrect input");
-          }
-          queue.push(Token{TokenType::operation, 0, '>', 3});
-          ++i;
-          break;
-        default:
-          throw std::logic_error("Incorrect input");
-      }
+      ++i;
+    }
+    if (start != i)
+    {
+      queue.push(line.substr(start, i - start));
     }
   }
   return queue;
+}
+
+tarasenko::Token tarasenko::stringToToken(const std::string& str)
+{
+  if (str.empty())
+  {
+    throw std::logic_error("Incorrect input");
+  }
+  if (std::isdigit(str[0]))
+  {
+    size_t pos = 0;
+    long long num = getNumber(str, pos);
+    if (pos != str.size())
+    {
+      throw std::logic_error("Incorrect input");
+    }
+    return Token{TokenType::num, num, 0, 0};
+  }
+  if (str == "(")
+  {
+    return Token{TokenType::left_parenthe, 0, 0, 0};
+  }
+  if (str == ")")
+  {
+    return Token{TokenType::right_parenthe, 0, 0, 0};
+  }
+  if (str == "+")
+  {
+    return Token{TokenType::operation, 0, '+', 1};
+  }
+  if (str == "-")
+  {
+    return Token{TokenType::operation, 0, '-', 1};
+  }
+  if (str == "*")
+  {
+    return Token{TokenType::operation, 0, '*', 2};
+  }
+  if (str == "/")
+  {
+    return Token{TokenType::operation, 0, '/', 2};
+  }
+  if (str == "%")
+  {
+    return Token{TokenType::operation, 0, '%', 2};
+  }
+  if (str == ">>")
+  {
+    return Token{TokenType::operation, 0, '>', 3};
+  }
+  throw std::logic_error("Incorrect input");
 }
 
 long long tarasenko::getNumber(const std::string& line, size_t& pos)
