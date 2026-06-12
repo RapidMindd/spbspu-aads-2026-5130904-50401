@@ -1,6 +1,5 @@
 #include "functions.hpp"
 
-#include <cctype>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -93,16 +92,6 @@ tarasenko::Token tarasenko::stringToToken(const std::string& str)
   {
     throw std::logic_error("Incorrect input");
   }
-  if (std::isdigit(str[0]))
-  {
-    size_t pos = 0;
-    long long num = std::stoll(str, &pos);
-    if (pos != str.size())
-    {
-      throw std::logic_error("Incorrect input");
-    }
-    return Token{TokenType::num, num, 0, 0};
-  }
   if (str == "(")
   {
     return Token{TokenType::left_parenthe, 0, 0, 0};
@@ -111,31 +100,47 @@ tarasenko::Token tarasenko::stringToToken(const std::string& str)
   {
     return Token{TokenType::right_parenthe, 0, 0, 0};
   }
-  if (str == "+")
+  if (isOperation(str))
   {
-    return Token{TokenType::operation, 0, '+', 1};
+    return Token{TokenType::operation, 0, str[0], getPriority(str)};
   }
-  if (str == "-")
+  size_t pos = 0;
+  long long num = 0;
+  try
   {
-    return Token{TokenType::operation, 0, '-', 1};
+    num = std::stoll(str, &pos);
   }
-  if (str == "*")
+  catch (const std::invalid_argument&)
   {
-    return Token{TokenType::operation, 0, '*', 2};
+    throw std::logic_error("Incorrect input");
   }
-  if (str == "/")
+  if (pos != str.size())
   {
-    return Token{TokenType::operation, 0, '/', 2};
+    throw std::logic_error("Incorrect input");
   }
-  if (str == "%")
+  return Token{TokenType::num, num, 0, 0};
+}
+
+bool tarasenko::isOperation(const std::string& str)
+{
+  return str == "+" || str == "-" || str == "*" || str == "/" || str == "%" || str == ">>";
+}
+
+int tarasenko::getPriority(const std::string& str)
+{
+  if (str == "+" || str == "-")
   {
-    return Token{TokenType::operation, 0, '%', 2};
+    return 1;
+  }
+  if (str == "*" || str == "/" || str == "%")
+  {
+    return 2;
   }
   if (str == ">>")
   {
-    return Token{TokenType::operation, 0, '>', 3};
+    return 3;
   }
-  throw std::logic_error("Incorrect input");
+  throw std::logic_error("Incorrect operation");
 }
 
 long long tarasenko::add(long long a, long long b)
