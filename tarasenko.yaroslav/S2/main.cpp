@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <string>
 #include "functions.hpp"
 #include "stack.hpp"
 
@@ -12,20 +13,38 @@ int main(int argc, char** argv)
   }
   try
   {
+    std::ifstream file;
+    std::istream* input = &std::cin;
+    tarasenko::Stack< long long > results;
+    std::string line;
     if (argc == 2)
     {
-      std::ifstream file(argv[1]);
+      file.open(argv[1]);
       if (!file.is_open())
       {
         std::cerr << "could not open file\n";
         return 1;
       }
-      tarasenko::readStreamAndPrintResults(file);
+      input = &file;
     }
-    else
+    while (std::getline(*input, line))
     {
-      tarasenko::readStreamAndPrintResults(std::cin);
+      if (!line.empty())
+      {
+        results.push(tarasenko::calculate(line));
+      }
     }
+    if (!results.empty())
+    {
+      std::cout << results.top();
+      results.pop();
+    }
+    while (!results.empty())
+    {
+      std::cout << " " << results.top();
+      results.pop();
+    }
+    std::cout << "\n";
   }
   catch (const std::exception& e)
   {

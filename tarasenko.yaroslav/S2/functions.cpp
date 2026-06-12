@@ -1,6 +1,5 @@
 #include "functions.hpp"
 
-#include <iostream>
 #include <limits>
 #include <stdexcept>
 
@@ -163,8 +162,11 @@ long long tarasenko::subtract(long long a, long long b)
 
 long long tarasenko::multiply(long long a, long long b)
 {
-  if ((a > 0 && b > 0 && a > MAX / b) || (a < 0 && b < 0 && a < MAX / b) \
-  || (a > 0 && b < 0 && b < MIN / a) || (a < 0 && b > 0 && a < MIN / b))
+  bool pos_overflow = a > 0 && b > 0 && a > MAX / b;
+  bool neg_overflow = a < 0 && b < 0 && a < MAX / b;
+  bool pos_neg_overflow = a > 0 && b < 0 && b < MIN / a;
+  bool neg_pos_overflow = a < 0 && b > 0 && a < MIN / b;
+  if (pos_overflow || neg_overflow || pos_neg_overflow || neg_pos_overflow)
   {
     throw std::overflow_error("multiplying overflow");
   }
@@ -221,17 +223,13 @@ void tarasenko::makeTopOperation(tokenStack& operations_stack, numStack& operand
   Token operation = operations_stack.top();
   operations_stack.pop();
 
-  if (operands_stack.empty())
+  if (operands_stack.size() < 2)
   {
     throw std::logic_error("Empty operands stack");
   }
   long long right_operand = operands_stack.top();
   operands_stack.pop();
 
-  if (operands_stack.empty())
-  {
-    throw std::logic_error("Empty operands stack");
-  }
   long long left_operand = operands_stack.top();
   operands_stack.pop();
   long long result;
@@ -259,28 +257,4 @@ void tarasenko::makeTopOperation(tokenStack& operations_stack, numStack& operand
       throw std::logic_error("Incorrect operation");
   }
   operands_stack.push(result);
-}
-
-void tarasenko::readStreamAndPrintResults(std::istream& stream)
-{
-  tarasenko::Stack< long long > results;
-  std::string line;
-  while (std::getline(stream, line))
-  {
-    if (!line.empty())
-    {
-      results.push(tarasenko::calculate(line));
-    }
-  }
-  if (!results.empty())
-  {
-    std::cout << results.top();
-    results.pop();
-  }
-  while (!results.empty())
-  {
-    std::cout << " " << results.top();
-    results.pop();
-  }
-  std::cout << "\n";
 }

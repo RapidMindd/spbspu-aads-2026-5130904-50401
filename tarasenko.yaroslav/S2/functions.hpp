@@ -1,7 +1,6 @@
 #ifndef FUNCTIONS_HPP
 #define FUNCTIONS_HPP
 
-#include <iosfwd>
 #include <limits>
 #include <string>
 #include "queue.hpp"
@@ -40,9 +39,6 @@ namespace tarasenko
   long long divide(long long a, long long b);
   long long mod(long long a, long long b);
   long long rightShift(long long a, long long b);
-
-  void readStreamAndPrintResults(std::istream& stream);
-
   const long long MAX = std::numeric_limits< long long >::max();
   const long long MIN = std::numeric_limits< long long >::min();
 }
