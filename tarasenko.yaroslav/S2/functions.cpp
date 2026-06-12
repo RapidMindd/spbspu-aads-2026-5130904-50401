@@ -96,7 +96,7 @@ tarasenko::Token tarasenko::stringToToken(const std::string& str)
   if (std::isdigit(str[0]))
   {
     size_t pos = 0;
-    long long num = getNumber(str, pos);
+    long long num = std::stoll(str, &pos);
     if (pos != str.size())
     {
       throw std::logic_error("Incorrect input");
@@ -136,27 +136,6 @@ tarasenko::Token tarasenko::stringToToken(const std::string& str)
     return Token{TokenType::operation, 0, '>', 3};
   }
   throw std::logic_error("Incorrect input");
-}
-
-long long tarasenko::getNumber(const std::string& line, size_t& pos)
-{
-  long long num = 0;
-  for (; pos < line.size(); ++pos)
-  {
-    if (std::isdigit(line[pos]))
-    {
-      if (num > (MAX - (line[pos] - '0')) / 10)
-      {
-        throw std::overflow_error("too large number");
-      }
-      num = num * 10 + (line[pos] - '0');
-    }
-    else
-    {
-      break;
-    }
-  }
-  return num;
 }
 
 long long tarasenko::add(long long a, long long b)

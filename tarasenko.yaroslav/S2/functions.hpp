@@ -28,7 +28,6 @@ namespace tarasenko
   long long calculate(const std::string& line);
   tarasenko::Queue< std::string > stringToQueue(const std::string& line);
   Token stringToToken(const std::string& str);
-  long long getNumber(const std::string& line, size_t& pos);
   using tokenStack = Stack< Token >;
   using numStack = Stack< long long >;
   void makeTopOperation(tokenStack& operations_stack, numStack& operands_stack);

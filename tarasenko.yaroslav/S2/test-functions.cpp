@@ -3,18 +3,6 @@
 
 using namespace tarasenko;
 
-BOOST_AUTO_TEST_CASE(get_number)
-{
-  std::string s = "12345";
-  size_t pos = 0;
-  BOOST_TEST(getNumber(s, pos) == 12345);
-  BOOST_TEST(pos == 5);
-  s = "12345a";
-  pos = 1;
-  BOOST_TEST(getNumber(s, pos) == 2345);
-  BOOST_TEST(pos == 5);
-}
-
 void checkToken(const Token& token, TokenType type, long long value, char operation, int priority)
 {
   BOOST_CHECK(token.type == type);
@@ -137,11 +125,11 @@ BOOST_AUTO_TEST_CASE(calsulate_overflow_expression)
     "( ( 0 - 9223372036854775807 ) - 1 ) % ( 0 - 1 )",
     "8 >> -1",
     "1 >> 63",
-    "5 / 0"
+    "5 / 0",
     "5 % 0"
   };
 
-  for (size_t i = 0; i < 14; ++i)
+  for (size_t i = 0; i < 16; ++i)
   {
     BOOST_CHECK_THROW(calculate(expressions[i]), std::exception);
   }
