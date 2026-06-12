@@ -1,6 +1,7 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
+#include <utility>
 #include "bidir_list.hpp"
 
 namespace tarasenko
@@ -11,9 +12,11 @@ namespace tarasenko
   public:
     void push(const T& rhs);
     void push(T&& rhs);
-    T pop();
+    void pop();
     const T& front() const;
+    T& front();
     const T& back() const;
+    T& back();
     size_t size() const noexcept;
     bool empty() const noexcept;
     void clear() noexcept;
@@ -31,15 +34,13 @@ namespace tarasenko
   template< class T >
   void Queue< T >::push(T&& rhs)
   {
-    data_.push_back(std::move(rhs));
+    data_.push_back(std::forward< T >(rhs));
   }
 
   template< class T >
-  T Queue< T >::pop()
+  void Queue< T >::pop()
   {
-    T value = data_.front();
     data_.pop_front();
-    return value;
   }
 
   template< class T >
@@ -49,7 +50,19 @@ namespace tarasenko
   }
 
   template< class T >
+  T& Queue< T >::front()
+  {
+    return data_.front();
+  }
+
+  template< class T >
   const T& Queue< T >::back() const
+  {
+    return data_.back();
+  }
+
+  template< class T >
+  T& Queue< T >::back()
   {
     return data_.back();
   }
