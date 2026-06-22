@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <iosfwd>
 
-#include "datastructures/vector.hpp"
+#include "vector.hpp"
 #include "move.hpp"
 #include "position.hpp"
 

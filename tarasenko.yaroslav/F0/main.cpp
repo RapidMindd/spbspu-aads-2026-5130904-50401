@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "analyzer.hpp"
-#include "datastructures/robinHoodTable.hpp"
-#include "datastructures/vector.hpp"
+#include "robinHoodTable.hpp"
+#include "vector.hpp"
 #include "engine.hpp"
 #include "game.hpp"
 #include "move_generator.hpp"

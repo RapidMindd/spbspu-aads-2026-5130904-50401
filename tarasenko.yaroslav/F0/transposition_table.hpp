@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "position.hpp"
 #include "move.hpp"
-#include "datastructures/robinHoodTable.hpp"
+#include "robinHoodTable.hpp"
 
 namespace chess
 {

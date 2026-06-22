@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include <string>
-#include "datastructures/robinHoodTable.hpp"
+#include "robinHoodTable.hpp"
 
 using namespace tarasenko;
 
