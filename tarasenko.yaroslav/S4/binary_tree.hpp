@@ -58,6 +58,7 @@ namespace tarasenko
     BSTree< Key, Value, Compare >& operator=(BSTree< Key, Value, Compare >&& rhs) noexcept;
 
     bool add(const Key& key, const Value& val);
+    bool add(const Key& key, Value&& val);
     bool drop(const Key& key);
     const Value& get(const Key& key) const;
     Value& get(const Key& key);
@@ -92,6 +93,8 @@ namespace tarasenko
 
   private:
     detail::Node< Key, Value >* find(const Key& key) const;
+    template< class T >
+    bool addInner(const Key& key, T&& val);
     void replace(detail::Node< Key, Value >* node, detail::Node< Key, Value >* child);
     void clear(detail::Node< Key, Value >* node);
     detail::Node< Key, Value >* copy(detail::Node< Key, Value >* node, detail::Node< Key, Value >* parent);
@@ -164,9 +167,22 @@ namespace tarasenko
   tree_template
   bool tree_type::add(const Key& key, const Value& val)
   {
+    return addInner(key, val);
+  }
+
+  tree_template
+  bool tree_type::add(const Key& key, Value&& val)
+  {
+    return addInner(key, std::move(val));
+  }
+
+  tree_template
+  template< class T >
+  bool tree_type::addInner(const Key& key, T&& val)
+  {
     if (!root_)
     {
-      root_ = new tree_node{{key, val}, nullptr, nullptr, nullptr};
+      root_ = new tree_node{{key, std::forward< T >(val)}, nullptr, nullptr, nullptr};
       ++size_;
       return true;
     }
@@ -177,7 +193,7 @@ namespace tarasenko
       {
         if (!cur->right)
         {
-          cur->right = new tree_node{{key, val}, nullptr, nullptr, cur};
+          cur->right = new tree_node{{key, std::forward< T >(val)}, nullptr, nullptr, cur};
           ++size_;
           return true;
         }
@@ -187,7 +203,7 @@ namespace tarasenko
       {
         if (!cur->left)
         {
-          cur->left = new tree_node{{key, val}, nullptr, nullptr, cur};
+          cur->left = new tree_node{{key, std::forward< T >(val)}, nullptr, nullptr, cur};
           ++size_;
           return true;
         }
