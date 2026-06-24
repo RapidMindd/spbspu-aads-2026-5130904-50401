@@ -38,7 +38,10 @@ int main(int argc, char** argv)
     try
     {
       cmds.at(cmd)(std::cin, std::cout, graphs);
-      std::cout << "\n";
+      if (cmd == "graphs" || cmd == "vertexes" || cmd == "outbound" || cmd == "inbound")
+      {
+        std::cout << "\n";
+      }
     }
     catch (const std::exception&)
     {
