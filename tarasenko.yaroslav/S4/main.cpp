@@ -80,7 +80,7 @@ void print(std::istream& in, std::ostream& out, Datasets& datasets)
     throw std::runtime_error("Invalid command");
   }
 
-  Dataset& dataset = datasets.get(name);
+  Dataset& dataset = datasets.at(name);
   if (dataset.isEmpty())
   {
     out << "<EMPTY>\n";
@@ -105,8 +105,8 @@ void complement(std::istream& in, std::ostream&, Datasets& datasets)
     throw std::runtime_error("Invalid command");
   }
 
-  const Dataset& lhs = datasets.get(lhsName);
-  const Dataset& rhs = datasets.get(rhsName);
+  const Dataset& lhs = datasets.at(lhsName);
+  const Dataset& rhs = datasets.at(rhsName);
   Dataset result;
   for (auto it = lhs.begin(); it != lhs.end(); ++it)
   {
@@ -117,7 +117,7 @@ void complement(std::istream& in, std::ostream&, Datasets& datasets)
   }
   if (datasets.has(newName))
   {
-    datasets.get(newName) = result;
+    datasets.at(newName) = result;
   }
   else
   {
@@ -136,8 +136,8 @@ void intersect(std::istream& in, std::ostream&, Datasets& datasets)
     throw std::runtime_error("Invalid command");
   }
 
-  const Dataset& lhs = datasets.get(lhsName);
-  const Dataset& rhs = datasets.get(rhsName);
+  const Dataset& lhs = datasets.at(lhsName);
+  const Dataset& rhs = datasets.at(rhsName);
   Dataset result;
   for (auto it = lhs.begin(); it != lhs.end(); ++it)
   {
@@ -148,7 +148,7 @@ void intersect(std::istream& in, std::ostream&, Datasets& datasets)
   }
   if (datasets.has(newName))
   {
-    datasets.get(newName) = result;
+    datasets.at(newName) = result;
   }
   else
   {
@@ -167,8 +167,8 @@ void Union(std::istream& in, std::ostream&, Datasets& datasets)
     throw std::runtime_error("Invalid command");
   }
 
-  const Dataset& lhs = datasets.get(lhsName);
-  const Dataset& rhs = datasets.get(rhsName);
+  const Dataset& lhs = datasets.at(lhsName);
+  const Dataset& rhs = datasets.at(rhsName);
   Dataset result;
   for (auto it = lhs.begin(); it != lhs.end(); ++it)
   {
@@ -180,7 +180,7 @@ void Union(std::istream& in, std::ostream&, Datasets& datasets)
   }
   if (datasets.has(newName))
   {
-    datasets.get(newName) = result;
+    datasets.at(newName) = result;
   }
   else
   {
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
   {
     try
     {
-      cmds.get(cmd)(std::cin, std::cout, datasets);
+      cmds.at(cmd)(std::cin, std::cout, datasets);
     }
     catch (const std::exception&)
     {

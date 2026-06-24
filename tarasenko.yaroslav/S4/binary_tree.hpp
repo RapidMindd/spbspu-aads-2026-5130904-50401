@@ -56,12 +56,14 @@ namespace tarasenko
 
     BSTree< Key, Value, Compare >& operator=(const BSTree< Key, Value, Compare >& rhs);
     BSTree< Key, Value, Compare >& operator=(BSTree< Key, Value, Compare >&& rhs) noexcept;
+    Value& operator[](const Key& key);
+    Value& operator[](Key&& key);
 
     std::pair< iterator, bool > add(const Key& key, const Value& val);
     std::pair< iterator, bool > add(const Key& key, Value&& val);
     size_t drop(const Key& key);
-    const Value& get(const Key& key) const;
-    Value& get(const Key& key);
+    const Value& at(const Key& key) const;
+    Value& at(const Key& key);
     bool has(const Key& key) const;
 
     void clear();
@@ -93,8 +95,8 @@ namespace tarasenko
 
   private:
     detail::Node< Key, Value >* find(const Key& key) const;
-    template< class T >
-    std::pair< iterator, bool > addInner(const Key& key, T&& val);
+    template< class K, class T >
+    std::pair< iterator, bool > addInner(K&& key, T&& val);
     void replace(detail::Node< Key, Value >* node, detail::Node< Key, Value >* child);
     void clear(detail::Node< Key, Value >* node);
     detail::Node< Key, Value >* copy(detail::Node< Key, Value >* node, detail::Node< Key, Value >* parent);
@@ -177,12 +179,12 @@ namespace tarasenko
   }
 
   tree_template
-  template< class T >
-  std::pair< tree_iterator, bool > tree_type::addInner(const Key& key, T&& val)
+  template< class K, class T >
+  std::pair< tree_iterator, bool > tree_type::addInner(K&& key, T&& val)
   {
     if (!root_)
     {
-      root_ = new tree_node{{key, std::forward< T >(val)}, nullptr, nullptr, nullptr};
+      root_ = new tree_node{{std::forward< K >(key), std::forward< T >(val)}, nullptr, nullptr, nullptr};
       ++size_;
       return {tree_iterator(root_, root_), true};
     }
@@ -193,7 +195,7 @@ namespace tarasenko
       {
         if (!cur->right)
         {
-          tree_node* node = new tree_node{{key, std::forward< T >(val)}, nullptr, nullptr, cur};
+          tree_node* node = new tree_node{{std::forward< K >(key), std::forward< T >(val)}, nullptr, nullptr, cur};
           cur->right = node;
           ++size_;
           return {tree_iterator(node, root_), true};
@@ -204,7 +206,7 @@ namespace tarasenko
       {
         if (!cur->left)
         {
-          tree_node* node = new tree_node{{key, std::forward< T >(val)}, nullptr, nullptr, cur};
+          tree_node* node = new tree_node{{std::forward< K >(key), std::forward< T >(val)}, nullptr, nullptr, cur};
           cur->left = node;
           ++size_;
           return {tree_iterator(node, root_), true};
@@ -319,7 +321,19 @@ namespace tarasenko
   }
 
   tree_template
-  const Value& tree_type::get(const Key& key) const
+  Value& tree_type::operator[](const Key& key)
+  {
+    return addInner(key, Value{}).first->second;
+  }
+
+  tree_template
+  Value& tree_type::operator[](Key&& key)
+  {
+    return addInner(std::move(key), Value{}).first->second;
+  }
+
+  tree_template
+  const Value& tree_type::at(const Key& key) const
   {
     tree_node* node = find(key);
     if (!node)
@@ -330,9 +344,9 @@ namespace tarasenko
   }
 
   tree_template
-  Value& tree_type::get(const Key& key)
+  Value& tree_type::at(const Key& key)
   {
-    return const_cast< Value& >(const_cast< const tree_type* >(this)->get(key));
+    return const_cast< Value& >(const_cast< const tree_type* >(this)->at(key));
   }
 
   tree_template
