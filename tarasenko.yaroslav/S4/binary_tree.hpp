@@ -68,8 +68,8 @@ namespace tarasenko
 
     void clear();
 
-    size_t getSize() const;
-    bool isEmpty() const;
+    size_t size() const;
+    bool empty() const;
 
     const_iterator rotateLeft(const_iterator it);
     const_iterator rotateRight(const_iterator it);
@@ -309,13 +309,13 @@ namespace tarasenko
   {}
 
   tree_template
-  size_t tree_type::getSize() const
+  size_t tree_type::size() const
   {
     return size_;
   }
 
   tree_template
-  bool tree_type::isEmpty() const
+  bool tree_type::empty() const
   {
     return !size_;
   }

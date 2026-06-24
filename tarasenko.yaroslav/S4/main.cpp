@@ -81,7 +81,7 @@ void print(std::istream& in, std::ostream& out, Datasets& datasets)
   }
 
   Dataset& dataset = datasets.at(name);
-  if (dataset.isEmpty())
+  if (dataset.empty())
   {
     out << "<EMPTY>\n";
     return;
