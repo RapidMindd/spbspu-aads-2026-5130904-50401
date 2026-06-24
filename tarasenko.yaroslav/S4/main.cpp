@@ -1,5 +1,6 @@
 #include <iostream>
 #include <exception>
+#include <fstream>
 #include <limits>
 #include <string>
 #include "functions.hpp"
@@ -12,7 +13,13 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  tarasenko::Datasets datasets = tarasenko::getFromFile(argv[1]);
+  std::ifstream input(argv[1]);
+  if (!input)
+  {
+    std::cerr << "Failed to open file\n";
+    return 1;
+  }
+  tarasenko::Datasets datasets = tarasenko::getFromFile(input);
   tarasenko::BSTree< std::string, tarasenko::Command > cmds;
   cmds.add("print", tarasenko::print);
   cmds.add("complement", tarasenko::complement);

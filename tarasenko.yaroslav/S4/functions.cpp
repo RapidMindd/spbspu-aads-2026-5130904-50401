@@ -1,6 +1,6 @@
 #include "functions.hpp"
-#include <fstream>
 #include <istream>
+#include <memory>
 #include <ostream>
 #include <stdexcept>
 
@@ -21,14 +21,8 @@ namespace
   }
 }
 
-tarasenko::Datasets tarasenko::getFromFile(const std::string& filename)
+tarasenko::Datasets tarasenko::getFromFile(std::istream& input)
 {
-  std::ifstream input(filename);
-  if (!input)
-  {
-    throw std::runtime_error("Failed to open file");
-  }
-
   Datasets datasets;
   std::string line;
   while (std::getline(input, line))
@@ -54,7 +48,7 @@ tarasenko::Datasets tarasenko::getFromFile(const std::string& filename)
         throw std::runtime_error("Incorrect dataset description");
       }
       size_t read = 0;
-      int keyNumber = std::stoi(key, &read);
+      int keyNumber = std::stoi(key, std::addressof(read));
       if (read != key.size())
       {
         throw std::runtime_error("Incorrect dataset description");

@@ -11,7 +11,7 @@ namespace tarasenko
   using Datasets = BSTree< std::string, Dataset >;
   using Command = void (*)(std::istream&, std::ostream&, Datasets&);
 
-  Datasets getFromFile(const std::string& filename);
+  Datasets getFromFile(std::istream& input);
   void print(std::istream& in, std::ostream& out, Datasets& datasets);
   void complement(std::istream& in, std::ostream&, Datasets& datasets);
   void intersect(std::istream& in, std::ostream&, Datasets& datasets);
