@@ -8,7 +8,6 @@ void tarasenko::showGraphs(std::istream&, std::ostream& out, GraphTable& graphs)
 {
   if (graphs.empty())
   {
-    out << "\n";
     return;
   }
   Vector< std::string > graphNames;
@@ -18,9 +17,11 @@ void tarasenko::showGraphs(std::istream&, std::ostream& out, GraphTable& graphs)
   }
   std::sort(graphNames.begin(), graphNames.end());
 
-  for (auto it = graphNames.begin(); it != graphNames.end(); ++it)
+  auto it = graphNames.begin();
+  out << *it;
+  for (++it; it != graphNames.end(); ++it)
   {
-    out << *it << "\n";
+    out << "\n" << *it;
   }
 }
 
@@ -33,13 +34,14 @@ void tarasenko::showVertexes(std::istream& in, std::ostream& out, GraphTable& gr
     Vector< std::string > vertexes = graphs.at(graphName).getVertexes();
     if (vertexes.isEmpty())
     {
-      out << "\n";
       return;
     }
     std::sort(vertexes.begin(), vertexes.end());
-    for (auto it = vertexes.begin(); it != vertexes.end(); ++it)
+    auto it = vertexes.begin();
+    out << *it;
+    for (++it; it != vertexes.end(); ++it)
     {
-      out << *it << "\n";
+      out << "\n" << *it;
     }
   }
   else
@@ -59,17 +61,21 @@ void tarasenko::showOutbound(std::istream& in, std::ostream& out, GraphTable& gr
     Vector< EdgeInfo > outbound = graphs.at(graphName).getOutbound(vertexName);
     if (outbound.isEmpty())
     {
-      out << "\n";
       return;
     }
-    for (auto it = outbound.begin(); it != outbound.end(); ++it)
+    auto it = outbound.begin();
+    out << it->vertex;
+    for (auto weightsIt = it->weights.begin(); weightsIt != it->weights.end(); ++weightsIt)
     {
-      out << it->vertex;
+      out << " " << *weightsIt;
+    }
+    for (++it; it != outbound.end(); ++it)
+    {
+      out << "\n" << it->vertex;
       for (auto weightsIt = it->weights.begin(); weightsIt != it->weights.end(); ++weightsIt)
       {
         out << " " << *weightsIt;
       }
-      out << "\n";
     }
   }
   else
@@ -89,17 +95,21 @@ void tarasenko::showInbound(std::istream& in, std::ostream& out, GraphTable& gra
     Vector< EdgeInfo > inbound = graphs.at(graphName).getInbound(vertexName);
     if (inbound.isEmpty())
     {
-      out << "\n";
       return;
     }
-    for (auto it = inbound.begin(); it != inbound.end(); ++it)
+    auto it = inbound.begin();
+    out << it->vertex;
+    for (auto weightsIt = it->weights.begin(); weightsIt != it->weights.end(); ++weightsIt)
     {
-      out << it->vertex;
+      out << " " << *weightsIt;
+    }
+    for (++it; it != inbound.end(); ++it)
+    {
+      out << "\n" << it->vertex;
       for (auto weightsIt = it->weights.begin(); weightsIt != it->weights.end(); ++weightsIt)
       {
         out << " " << *weightsIt;
       }
-      out << "\n";
     }
   }
   else

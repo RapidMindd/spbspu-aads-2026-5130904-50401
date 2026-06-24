@@ -38,6 +38,7 @@ int main(int argc, char** argv)
     try
     {
       cmds.at(cmd)(std::cin, std::cout, graphs);
+      std::cout << "\n";
     }
     catch (const std::exception&)
     {
