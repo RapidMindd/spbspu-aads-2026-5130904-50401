@@ -17,7 +17,6 @@ namespace tarasenko
 
   class Graph
   {
-    friend Graph merge(const Graph& lhs, const Graph& rhs);
   public:
     void addVertex(const std::string& name);
     bool hasVertex(const std::string& name) const;
@@ -34,6 +33,8 @@ namespace tarasenko
     void swap(Graph& rhs) noexcept;
 
   private:
+    friend Graph merge(const Graph& lhs, const Graph& rhs);
+
     HashTable<
       std::pair< std::string, std::string >,
       Vector< unsigned int >

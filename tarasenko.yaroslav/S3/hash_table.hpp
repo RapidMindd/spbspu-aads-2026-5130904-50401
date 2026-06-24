@@ -5,6 +5,7 @@
 #include <utility>
 #include <functional>
 #include <stdexcept>
+#include <memory>
 #include "bidir_list.hpp"
 #include "vector.hpp"
 #include "hmac_hash.hpp"
@@ -214,16 +215,15 @@ namespace tarasenko
   template< class Key, class Value, class Hash, class Equal >
   bool HashTable< Key, Value, Hash, Equal >::has(const Key& key) const
   {
-    size_t slot = hash_(key) % table_.getSize();
-    const Bucket& list = table_[slot];
-    for (auto it = list.begin(); it != list.end(); ++it)
+    try
     {
-      if (equal_(it->first, key))
-      {
-        return true;
-      }
+      at(key);
     }
-    return false;
+    catch (const std::runtime_error&)
+    {
+      return false;
+    }
+    return true;
   }
 
   template< class Key, class Value, class Hash, class Equal >
@@ -301,7 +301,7 @@ namespace tarasenko
   typename Iterator< Key, Value, Hash, Equal >::Pair*
     HashTableForwardIterator< Key, Value, Hash, Equal >::operator->()
   {
-    return &(**this);
+    return std::addressof(**this);
   }
 
   template< class Key, class Value, class Hash, class Equal >
@@ -417,7 +417,7 @@ namespace tarasenko
   const typename ConstIterator< Key, Value, Hash, Equal >::Pair*
     HashTableConstForwardIterator< Key, Value, Hash, Equal >::operator->() const
   {
-    return &(**this);
+    return std::addressof(**this);
   }
 
   template< class Key, class Value, class Hash, class Equal >
