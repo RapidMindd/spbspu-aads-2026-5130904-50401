@@ -11,16 +11,30 @@
 
 namespace tarasenko
 {
+  template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
+  class HashTable;
+
   template< class Key, class Value, class Hash, class Equal >
   class HashTableForwardIterator;
 
   template< class Key, class Value, class Hash, class Equal >
   class HashTableConstForwardIterator;
 
-  template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
+  template< class Key, class Value, class Hash, class Equal >
+  using Table = HashTable< Key, Value, Hash, Equal >;
+
+  template< class Key, class Value, class Hash, class Equal >
+  using Iterator = HashTableForwardIterator< Key, Value, Hash, Equal >;
+
+  template< class Key, class Value, class Hash, class Equal >
+  using ConstIterator = HashTableConstForwardIterator< Key, Value, Hash, Equal >;
+
+  template< class Key, class Value, class Hash, class Equal >
   class HashTable
   {
   public:
+    using Bucket = BidirList< std::pair< Key, Value > >;
+
     HashTable(size_t slots = 64, const Hash& hash = Hash(), const Equal& equal = Equal());
 
     void add(const Key& key, const Value& val);
@@ -37,108 +51,104 @@ namespace tarasenko
     size_t capacity() const;
     bool empty() const;
 
-    void swap(HashTable< Key, Value, Hash, Equal >& rhs) noexcept;
+    void swap(Table< Key, Value, Hash, Equal >& rhs) noexcept;
 
-    HashTableForwardIterator< Key, Value, Hash, Equal > begin();
-    HashTableForwardIterator< Key, Value, Hash, Equal > end();
+    Iterator< Key, Value, Hash, Equal > begin();
+    Iterator< Key, Value, Hash, Equal > end();
 
-    HashTableConstForwardIterator< Key, Value, Hash, Equal > begin() const;
-    HashTableConstForwardIterator< Key, Value, Hash, Equal > end() const;
+    ConstIterator< Key, Value, Hash, Equal > begin() const;
+    ConstIterator< Key, Value, Hash, Equal > end() const;
 
-    HashTableConstForwardIterator< Key, Value, Hash, Equal > cbegin() const;
-    HashTableConstForwardIterator< Key, Value, Hash, Equal > cend() const;
+    ConstIterator< Key, Value, Hash, Equal > cbegin() const;
+    ConstIterator< Key, Value, Hash, Equal > cend() const;
 
   private:
     friend class HashTableForwardIterator< Key, Value, Hash, Equal >;
     friend class HashTableConstForwardIterator< Key, Value, Hash, Equal >;
 
-    Vector< BidirList< std::pair< Key, Value > > > table_;
+    Vector< Bucket > table_;
     size_t size_ = 0;
     Hash hash_;
     Equal equal_;
   };
 
   template< class Key, class Value, class Hash, class Equal >
-  bool operator==(const HashTable< Key, Value, Hash, Equal >& lhs,
-    const HashTable< Key, Value, Hash, Equal >& rhs);
+  bool operator==(const Table< Key, Value, Hash, Equal >& lhs,
+    const Table< Key, Value, Hash, Equal >& rhs);
 
   template< class Key, class Value, class Hash, class Equal >
-  bool operator!=(const HashTable< Key, Value, Hash, Equal >& lhs,
-    const HashTable< Key, Value, Hash, Equal >& rhs);
+  bool operator!=(const Table< Key, Value, Hash, Equal >& lhs,
+    const Table< Key, Value, Hash, Equal >& rhs);
 
   template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
   class HashTableForwardIterator
   {
   public:
+    using Bucket = BidirList< std::pair< Key, Value > >;
+    using Pair = std::pair< Key, Value >;
+
     HashTableForwardIterator();
 
-    std::pair< Key, Value >& operator*();
-    std::pair< Key, Value >* operator->();
+    Pair& operator*();
+    Pair* operator->();
 
-    HashTableForwardIterator& operator++();
-    HashTableForwardIterator operator++(int);
+    Iterator< Key, Value, Hash, Equal >& operator++();
+    Iterator< Key, Value, Hash, Equal > operator++(int);
 
-    bool operator==(const HashTableForwardIterator& rhs) const;
-    bool operator!=(const HashTableForwardIterator& rhs) const;
+    bool operator==(const Iterator< Key, Value, Hash, Equal >& rhs) const;
+    bool operator!=(const Iterator< Key, Value, Hash, Equal >& rhs) const;
 
   private:
     friend class HashTable< Key, Value, Hash, Equal >;
 
-    HashTable< Key, Value, Hash, Equal >* owner_;
-    VecIt< BidirList< std::pair< Key, Value > > > bucketIt_;
-    ListIter<std::pair< Key, Value > > listIt_;
+    Table< Key, Value, Hash, Equal >* owner_;
+    VecIt< Bucket > bucketIt_;
+    ListIter< Pair > listIt_;
 
-    HashTableForwardIterator(HashTable< Key, Value, Hash, Equal >* owner,
-      VecIt< BidirList< std::pair< Key, Value > > > bucketIt,
-      ListIter<std::pair< Key, Value > > listIt);
+    HashTableForwardIterator(Table< Key, Value, Hash, Equal >* owner,
+      VecIt< Bucket > bucketIt,
+      ListIter< Pair > listIt);
   };
 
   template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
   class HashTableConstForwardIterator
   {
   public:
+    using Bucket = BidirList< std::pair< Key, Value > >;
+    using Pair = std::pair< Key, Value >;
+
     HashTableConstForwardIterator();
 
-    const std::pair< Key, Value >& operator*() const;
-    const std::pair< Key, Value >* operator->() const;
+    const Pair& operator*() const;
+    const Pair* operator->() const;
 
-    HashTableConstForwardIterator& operator++();
-    HashTableConstForwardIterator operator++(int);
+    ConstIterator< Key, Value, Hash, Equal >& operator++();
+    ConstIterator< Key, Value, Hash, Equal > operator++(int);
 
-    bool operator==(const HashTableConstForwardIterator& rhs) const;
-    bool operator!=(const HashTableConstForwardIterator& rhs) const;
+    bool operator==(const ConstIterator< Key, Value, Hash, Equal >& rhs) const;
+    bool operator!=(const ConstIterator< Key, Value, Hash, Equal >& rhs) const;
 
   private:
     friend class HashTable< Key, Value, Hash, Equal >;
 
-    const HashTable< Key, Value, Hash, Equal >* owner_;
-    VecConstIt< BidirList< std::pair< Key, Value > > > bucketIt_;
-    ListConstIter<std::pair< Key, Value > > listIt_;
+    const Table< Key, Value, Hash, Equal >* owner_;
+    VecConstIt< Bucket > bucketIt_;
+    ListConstIter< Pair > listIt_;
 
-    HashTableConstForwardIterator(const HashTable< Key, Value, Hash, Equal >* owner,
-      VecConstIt< BidirList< std::pair< Key, Value > > > bucketIt,
-      ListConstIter<std::pair< Key, Value > > listIt);
+    HashTableConstForwardIterator(const Table< Key, Value, Hash, Equal >* owner,
+      VecConstIt< Bucket > bucketIt,
+      ListConstIter< Pair > listIt);
   };
 
-  #define ht_template template< class Key, class Value, class Hash, class Equal >
-  #define ht_type HashTable< Key, Value, Hash, Equal >
-  #define ht_iterator HashTableForwardIterator< Key, Value, Hash, Equal >
-  #define ht_const_iterator HashTableConstForwardIterator< Key, Value, Hash, Equal >
-
-  template< class Key, class Value >
-  using Bucket = BidirList< std::pair< Key, Value > >;
-  template< class Key, class Value >
-  using Pair = std::pair< Key, Value >;
-
-  ht_template
+  template< class Key, class Value, class Hash, class Equal >
   HashTable< Key, Value, Hash, Equal >::HashTable(size_t slots, const Hash& hash, const Equal& equal):
-    table_(slots > 0 ? slots : 1, Bucket< Key, Value >()),
+    table_(slots > 0 ? slots : 1, Bucket()),
     hash_(hash),
     equal_(equal)
   {}
 
-  ht_template
-  void ht_type::add(const Key& key, const Value& val)
+  template< class Key, class Value, class Hash, class Equal >
+  void HashTable< Key, Value, Hash, Equal >::add(const Key& key, const Value& val)
   {
     size_t slot = hash_(key) % table_.getSize();
     const auto& list = table_[slot];
@@ -153,8 +163,8 @@ namespace tarasenko
     ++size_;
   }
 
-  ht_template
-  void ht_type::add(const Key& key, Value&& val)
+  template< class Key, class Value, class Hash, class Equal >
+  void HashTable< Key, Value, Hash, Equal >::add(const Key& key, Value&& val)
   {
     size_t slot = hash_(key) % table_.getSize();
     const auto& list = table_[slot];
@@ -169,8 +179,8 @@ namespace tarasenko
     ++size_;
   }
 
-  ht_template
-  size_t ht_type::drop(const Key& key)
+  template< class Key, class Value, class Hash, class Equal >
+  size_t HashTable< Key, Value, Hash, Equal >::drop(const Key& key)
   {
     size_t slot = hash_(key) % table_.getSize();
     auto& list = table_[slot];
@@ -186,8 +196,8 @@ namespace tarasenko
     return 0;
   }
 
-  ht_template
-  const Value& ht_type::at(const Key& key) const
+  template< class Key, class Value, class Hash, class Equal >
+  const Value& HashTable< Key, Value, Hash, Equal >::at(const Key& key) const
   {
     size_t slot = hash_(key) % table_.getSize();
     const auto& list = table_[slot];
@@ -201,8 +211,8 @@ namespace tarasenko
     throw std::runtime_error("Key not found");
   }
 
-  ht_template
-  bool ht_type::has(const Key& key) const
+  template< class Key, class Value, class Hash, class Equal >
+  bool HashTable< Key, Value, Hash, Equal >::has(const Key& key) const
   {
     size_t slot = hash_(key) % table_.getSize();
     const auto& list = table_[slot];
@@ -216,22 +226,22 @@ namespace tarasenko
     return false;
   }
 
-  ht_template
-  size_t ht_type::size() const
+  template< class Key, class Value, class Hash, class Equal >
+  size_t HashTable< Key, Value, Hash, Equal >::size() const
   {
     return size_;
   }
 
-  ht_template
-  size_t ht_type::capacity() const
+  template< class Key, class Value, class Hash, class Equal >
+  size_t HashTable< Key, Value, Hash, Equal >::capacity() const
   {
     return table_.getSize();
   }
 
-  ht_template
-  void ht_type::rehash(size_t slots)
+  template< class Key, class Value, class Hash, class Equal >
+  void HashTable< Key, Value, Hash, Equal >::rehash(size_t slots)
   {
-    ht_type copy(slots);
+    Table< Key, Value, Hash, Equal > copy(slots);
     for (auto it = begin(); it != end(); ++it)
     {
       copy.add(it->first, it->second);
@@ -239,8 +249,8 @@ namespace tarasenko
     swap(copy);
   }
 
-  ht_template
-  void ht_type::swap(ht_type& rhs) noexcept
+  template< class Key, class Value, class Hash, class Equal >
+  void HashTable< Key, Value, Hash, Equal >::swap(Table< Key, Value, Hash, Equal >& rhs) noexcept
   {
     table_.swap(rhs.table_);
     std::swap(size_, rhs.size_);
@@ -248,8 +258,9 @@ namespace tarasenko
     std::swap(equal_, rhs.equal_);
   }
 
-  ht_template
-  bool operator==(const ht_type& lhs, const ht_type& rhs)
+  template< class Key, class Value, class Hash, class Equal >
+  bool operator==(const Table< Key, Value, Hash, Equal >& lhs,
+    const Table< Key, Value, Hash, Equal >& rhs)
   {
     if (lhs.size() != rhs.size())
     {
@@ -272,26 +283,29 @@ namespace tarasenko
     return true;
   }
 
-  ht_template
-  bool operator!=(const ht_type& lhs, const ht_type& rhs)
+  template< class Key, class Value, class Hash, class Equal >
+  bool operator!=(const Table< Key, Value, Hash, Equal >& lhs,
+    const Table< Key, Value, Hash, Equal >& rhs)
   {
     return !(lhs == rhs);
   }
 
-  ht_template
-  Pair< Key, Value >& ht_iterator::operator*()
+  template< class Key, class Value, class Hash, class Equal >
+  typename Iterator< Key, Value, Hash, Equal >::Pair&
+    HashTableForwardIterator< Key, Value, Hash, Equal >::operator*()
   {
     return *listIt_;
   }
 
-  ht_template
-  Pair< Key, Value >* ht_iterator::operator->()
+  template< class Key, class Value, class Hash, class Equal >
+  typename Iterator< Key, Value, Hash, Equal >::Pair*
+    HashTableForwardIterator< Key, Value, Hash, Equal >::operator->()
   {
     return &(**this);
   }
 
-  ht_template
-  ht_iterator& ht_iterator::operator++()
+  template< class Key, class Value, class Hash, class Equal >
+  Iterator< Key, Value, Hash, Equal >& HashTableForwardIterator< Key, Value, Hash, Equal >::operator++()
   {
     ++listIt_;
     if (listIt_ == bucketIt_->end())
@@ -309,16 +323,17 @@ namespace tarasenko
     return *this;
   }
 
-  ht_template
-  ht_iterator ht_iterator::operator++(int)
+  template< class Key, class Value, class Hash, class Equal >
+  Iterator< Key, Value, Hash, Equal > HashTableForwardIterator< Key, Value, Hash, Equal >::operator++(int)
   {
-    ht_iterator copy = *this;
+    Iterator< Key, Value, Hash, Equal > copy = *this;
     ++(*this);
     return copy;
   }
 
-  ht_template
-  bool ht_iterator::operator==(const ht_iterator& rhs) const
+  template< class Key, class Value, class Hash, class Equal >
+  bool HashTableForwardIterator< Key, Value, Hash, Equal >::operator==(
+    const Iterator< Key, Value, Hash, Equal >& rhs) const
   {
     if (owner_ != rhs.owner_ || bucketIt_ != rhs.bucketIt_)
     {
@@ -331,28 +346,30 @@ namespace tarasenko
     return listIt_ == rhs.listIt_;
   }
 
-  ht_template
-  bool ht_iterator::operator!=(const ht_iterator& rhs) const
+  template< class Key, class Value, class Hash, class Equal >
+  bool HashTableForwardIterator< Key, Value, Hash, Equal >::operator!=(
+    const Iterator< Key, Value, Hash, Equal >& rhs) const
   {
     return !(*this == rhs);
   }
 
-  ht_template
-  ht_iterator::HashTableForwardIterator():
+  template< class Key, class Value, class Hash, class Equal >
+  HashTableForwardIterator< Key, Value, Hash, Equal >::HashTableForwardIterator():
     owner_(nullptr)
   {}
 
-  ht_template
-  ht_iterator::HashTableForwardIterator(ht_type* owner,
-    VecIt< BidirList< std::pair< Key, Value > > > bucketIt,
-    ListIter<std::pair< Key, Value > > listIt):
+  template< class Key, class Value, class Hash, class Equal >
+  HashTableForwardIterator< Key, Value, Hash, Equal >::HashTableForwardIterator(
+    Table< Key, Value, Hash, Equal >* owner,
+    VecIt< Bucket > bucketIt,
+    ListIter< Pair > listIt):
     owner_(owner),
     bucketIt_(bucketIt),
     listIt_(listIt)
   {}
 
-  ht_template
-  ht_iterator ht_type::begin()
+  template< class Key, class Value, class Hash, class Equal >
+  Iterator< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::begin()
   {
     auto bucketIt = table_.begin();
     while (bucketIt != table_.end() && bucketIt->empty())
@@ -364,43 +381,47 @@ namespace tarasenko
       return end();
     }
 
-    return ht_iterator(this, bucketIt, bucketIt->begin());
+    return Iterator< Key, Value, Hash, Equal >(this, bucketIt, bucketIt->begin());
   }
 
-  ht_template
-  ht_iterator ht_type::end()
+  template< class Key, class Value, class Hash, class Equal >
+  Iterator< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::end()
   {
-    return ht_iterator(this, table_.end(), ListIter< Pair< Key, Value > >());
+    return Iterator< Key, Value, Hash, Equal >(this, table_.end(),
+      ListIter< typename Iterator< Key, Value, Hash, Equal >::Pair >());
   }
 
-  ht_template
-  ht_const_iterator::HashTableConstForwardIterator():
+  template< class Key, class Value, class Hash, class Equal >
+  HashTableConstForwardIterator< Key, Value, Hash, Equal >::HashTableConstForwardIterator():
     owner_(nullptr)
   {}
 
-  ht_template
-  ht_const_iterator::HashTableConstForwardIterator(const ht_type* owner,
-    VecConstIt< BidirList< std::pair< Key, Value > > > bucketIt,
-    ListConstIter<std::pair< Key, Value > > listIt):
+  template< class Key, class Value, class Hash, class Equal >
+  HashTableConstForwardIterator< Key, Value, Hash, Equal >::HashTableConstForwardIterator(
+    const Table< Key, Value, Hash, Equal >* owner,
+    VecConstIt< Bucket > bucketIt,
+    ListConstIter< Pair > listIt):
     owner_(owner),
     bucketIt_(bucketIt),
     listIt_(listIt)
   {}
 
-  ht_template
-  const Pair< Key, Value >& ht_const_iterator::operator*() const
+  template< class Key, class Value, class Hash, class Equal >
+  const typename ConstIterator< Key, Value, Hash, Equal >::Pair&
+    HashTableConstForwardIterator< Key, Value, Hash, Equal >::operator*() const
   {
     return *listIt_;
   }
 
-  ht_template
-  const Pair< Key, Value >* ht_const_iterator::operator->() const
+  template< class Key, class Value, class Hash, class Equal >
+  const typename ConstIterator< Key, Value, Hash, Equal >::Pair*
+    HashTableConstForwardIterator< Key, Value, Hash, Equal >::operator->() const
   {
     return &(**this);
   }
 
-  ht_template
-  ht_const_iterator& ht_const_iterator::operator++()
+  template< class Key, class Value, class Hash, class Equal >
+  ConstIterator< Key, Value, Hash, Equal >& HashTableConstForwardIterator< Key, Value, Hash, Equal >::operator++()
   {
     ++listIt_;
     if (listIt_ == bucketIt_->end())
@@ -418,16 +439,17 @@ namespace tarasenko
     return *this;
   }
 
-  ht_template
-  ht_const_iterator ht_const_iterator::operator++(int)
+  template< class Key, class Value, class Hash, class Equal >
+  ConstIterator< Key, Value, Hash, Equal > HashTableConstForwardIterator< Key, Value, Hash, Equal >::operator++(int)
   {
-    ht_const_iterator copy = *this;
+    ConstIterator< Key, Value, Hash, Equal > copy = *this;
     ++(*this);
     return copy;
   }
 
-  ht_template
-  bool ht_const_iterator::operator==(const ht_const_iterator& rhs) const
+  template< class Key, class Value, class Hash, class Equal >
+  bool HashTableConstForwardIterator< Key, Value, Hash, Equal >::operator==(
+    const ConstIterator< Key, Value, Hash, Equal >& rhs) const
   {
     if (owner_ != rhs.owner_ || bucketIt_ != rhs.bucketIt_)
     {
@@ -440,14 +462,15 @@ namespace tarasenko
     return listIt_ == rhs.listIt_;
   }
 
-  ht_template
-  bool ht_const_iterator::operator!=(const ht_const_iterator& rhs) const
+  template< class Key, class Value, class Hash, class Equal >
+  bool HashTableConstForwardIterator< Key, Value, Hash, Equal >::operator!=(
+    const ConstIterator< Key, Value, Hash, Equal >& rhs) const
   {
     return !(*this == rhs);
   }
 
-  ht_template
-  ht_const_iterator ht_type::cbegin() const
+  template< class Key, class Value, class Hash, class Equal >
+  ConstIterator< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::cbegin() const
   {
     auto bucketIt = table_.cbegin();
     while (bucketIt != table_.cend() && bucketIt->empty())
@@ -459,29 +482,30 @@ namespace tarasenko
       return cend();
     }
 
-    return ht_const_iterator(this, bucketIt, bucketIt->cbegin());
+    return ConstIterator< Key, Value, Hash, Equal >(this, bucketIt, bucketIt->cbegin());
   }
 
-  ht_template
-  ht_const_iterator ht_type::cend() const
+  template< class Key, class Value, class Hash, class Equal >
+  ConstIterator< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::cend() const
   {
-    return ht_const_iterator(this, table_.cend(), ListConstIter< Pair< Key, Value > >());
+    return ConstIterator< Key, Value, Hash, Equal >(this, table_.cend(),
+      ListConstIter< typename ConstIterator< Key, Value, Hash, Equal >::Pair >());
   }
 
-  ht_template
-  ht_const_iterator ht_type::begin() const
+  template< class Key, class Value, class Hash, class Equal >
+  ConstIterator< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::begin() const
   {
     return cbegin();
   }
 
-  ht_template
-  ht_const_iterator ht_type::end() const
+  template< class Key, class Value, class Hash, class Equal >
+  ConstIterator< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::end() const
   {
     return cend();
   }
 
-  ht_template
-  Value& ht_type::at(const Key& key)
+  template< class Key, class Value, class Hash, class Equal >
+  Value& HashTable< Key, Value, Hash, Equal >::at(const Key& key)
   {
     size_t slot = hash_(key) % table_.getSize();
     auto& list = table_[slot];
@@ -495,8 +519,8 @@ namespace tarasenko
     throw std::runtime_error("Key not found");
   }
 
-  ht_template
-  Value& ht_type::operator[](const Key& key)
+  template< class Key, class Value, class Hash, class Equal >
+  Value& HashTable< Key, Value, Hash, Equal >::operator[](const Key& key)
   {
     size_t slot = hash_(key) % table_.getSize();
     auto& list = table_[slot];
@@ -512,8 +536,8 @@ namespace tarasenko
     return list.front().second;
   }
 
-  ht_template
-  Value& ht_type::operator[](Key&& key)
+  template< class Key, class Value, class Hash, class Equal >
+  Value& HashTable< Key, Value, Hash, Equal >::operator[](Key&& key)
   {
     size_t slot = hash_(key) % table_.getSize();
     auto& list = table_[slot];
@@ -529,15 +553,12 @@ namespace tarasenko
     return list.front().second;
   }
 
-  ht_template
-  bool ht_type::empty() const
+  template< class Key, class Value, class Hash, class Equal >
+  bool HashTable< Key, Value, Hash, Equal >::empty() const
   {
     return size() == 0;
   }
 
-  #undef ht_template
-  #undef ht_type
-  #undef ht_iterator
 };
 
 #endif

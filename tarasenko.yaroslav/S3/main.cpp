@@ -11,7 +11,7 @@ using HTable = HashTable< std::string, Graph >;
 
 void showGraphs(std::istream&, std::ostream& out, HTable& graphs)
 {
-  if (graphs.isEmpty())
+  if (graphs.empty())
   {
     out << "\n";
     return;
