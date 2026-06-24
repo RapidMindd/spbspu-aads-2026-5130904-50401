@@ -15,7 +15,10 @@ BOOST_AUTO_TEST_CASE(default_constructor)
 BOOST_AUTO_TEST_CASE(add)
 {
   Tree tree;
-  tree.add(1, 1);
+  auto result = tree.add(1, 1);
+  BOOST_TEST(result.second);
+  BOOST_TEST(result.first->first == 1);
+  BOOST_TEST(result.first->second == 1);
   BOOST_TEST(!tree.isEmpty());
   BOOST_TEST(tree.getSize() == 1);
   BOOST_TEST(tree.get(1) == 1);
@@ -25,7 +28,9 @@ BOOST_AUTO_TEST_CASE(add_existing)
 {
   Tree tree;
   tree.add(1, 1);
-  BOOST_TEST(!tree.add(1, 2));
+  auto result = tree.add(1, 2);
+  BOOST_TEST(!result.second);
+  BOOST_TEST(result.first->first == 1);
   BOOST_TEST(tree.get(1) == 1);
 }
 
@@ -33,10 +38,10 @@ BOOST_AUTO_TEST_CASE(drop)
 {
   Tree tree;
   tree.add(1, 1);
-  BOOST_TEST(tree.drop(1));
+  BOOST_TEST(tree.drop(1) == 1);
   BOOST_TEST(tree.isEmpty());
   BOOST_TEST(tree.getSize() == 0);
-  BOOST_TEST(!tree.drop(1));
+  BOOST_TEST(tree.drop(1) == 0);
 }
 
 BOOST_AUTO_TEST_CASE(get)
