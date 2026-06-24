@@ -28,7 +28,10 @@ void tarasenko::showGraphs(std::istream&, std::ostream& out, GraphTable& graphs)
 void tarasenko::showVertexes(std::istream& in, std::ostream& out, GraphTable& graphs)
 {
   std::string graphName;
-  in >> graphName;
+  if (!(in >> graphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   if (graphs.has(graphName))
   {
     Vector< std::string > vertexes = graphs.at(graphName).getVertexes();
@@ -53,9 +56,15 @@ void tarasenko::showVertexes(std::istream& in, std::ostream& out, GraphTable& gr
 void tarasenko::showOutbound(std::istream& in, std::ostream& out, GraphTable& graphs)
 {
   std::string graphName;
-  in >> graphName;
+  if (!(in >> graphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   std::string vertexName;
-  in >> vertexName;
+  if (!(in >> vertexName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   if (graphs.has(graphName) && graphs.at(graphName).hasVertex(vertexName))
   {
     Vector< EdgeInfo > outbound = graphs.at(graphName).getOutbound(vertexName);
@@ -87,9 +96,15 @@ void tarasenko::showOutbound(std::istream& in, std::ostream& out, GraphTable& gr
 void tarasenko::showInbound(std::istream& in, std::ostream& out, GraphTable& graphs)
 {
   std::string graphName;
-  in >> graphName;
+  if (!(in >> graphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   std::string vertexName;
-  in >> vertexName;
+  if (!(in >> vertexName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   if (graphs.has(graphName) && graphs.at(graphName).hasVertex(vertexName))
   {
     Vector< EdgeInfo > inbound = graphs.at(graphName).getInbound(vertexName);
@@ -121,13 +136,25 @@ void tarasenko::showInbound(std::istream& in, std::ostream& out, GraphTable& gra
 void tarasenko::bind(std::istream& in, std::ostream&, GraphTable& graphs)
 {
   std::string graphName;
-  in >> graphName;
+  if (!(in >> graphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   std::string from;
-  in >> from;
+  if (!(in >> from))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   std::string to;
-  in >> to;
+  if (!(in >> to))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   unsigned int weight;
-  in >> weight;
+  if (!(in >> weight))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   if (graphs.has(graphName))
   {
     graphs.at(graphName).bind(from, to, weight);
@@ -141,13 +168,25 @@ void tarasenko::bind(std::istream& in, std::ostream&, GraphTable& graphs)
 void tarasenko::cut(std::istream& in, std::ostream&, GraphTable& graphs)
 {
   std::string graphName;
-  in >> graphName;
+  if (!(in >> graphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   std::string from;
-  in >> from;
+  if (!(in >> from))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   std::string to;
-  in >> to;
+  if (!(in >> to))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   unsigned int weight;
-  in >> weight;
+  if (!(in >> weight))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   if (graphs.has(graphName))
   {
     graphs.at(graphName).cut(from, to, weight);
@@ -161,16 +200,25 @@ void tarasenko::cut(std::istream& in, std::ostream&, GraphTable& graphs)
 void tarasenko::createGraph(std::istream& in, std::ostream&, GraphTable& graphs)
 {
   std::string graphName;
-  in >> graphName;
+  if (!(in >> graphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   if (!graphs.has(graphName))
   {
     size_t vertexesCount;
-    in >> vertexesCount;
+    if (!(in >> vertexesCount))
+    {
+      throw std::runtime_error("Invalid command parameters");
+    }
     Graph graph;
     for (size_t i = 0; i < vertexesCount; ++i)
     {
       std::string vertexName;
-      in >> vertexName;
+      if (!(in >> vertexName))
+      {
+        throw std::runtime_error("Invalid command parameters");
+      }
       graph.addVertex(vertexName);
     }
     graphs.add(graphName, graph);
@@ -184,11 +232,20 @@ void tarasenko::createGraph(std::istream& in, std::ostream&, GraphTable& graphs)
 void tarasenko::mergeGraphs(std::istream& in, std::ostream&, GraphTable& graphs)
 {
   std::string resultGraphName;
-  in >> resultGraphName;
+  if (!(in >> resultGraphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   std::string firstGraphName;
-  in >> firstGraphName;
+  if (!(in >> firstGraphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   std::string secondGraphName;
-  in >> secondGraphName;
+  if (!(in >> secondGraphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   if (graphs.has(firstGraphName) && graphs.has(secondGraphName) && !graphs.has(resultGraphName))
   {
     Graph result = merge(graphs.at(firstGraphName), graphs.at(secondGraphName));
@@ -203,18 +260,30 @@ void tarasenko::mergeGraphs(std::istream& in, std::ostream&, GraphTable& graphs)
 void tarasenko::extractGraph(std::istream& in, std::ostream&, GraphTable& graphs)
 {
   std::string resultGraphName;
-  in >> resultGraphName;
+  if (!(in >> resultGraphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   std::string graphName;
-  in >> graphName;
+  if (!(in >> graphName))
+  {
+    throw std::runtime_error("Invalid command parameters");
+  }
   if (graphs.has(graphName) && !graphs.has(resultGraphName))
   {
     size_t vertexesCount;
-    in >> vertexesCount;
+    if (!(in >> vertexesCount))
+    {
+      throw std::runtime_error("Invalid command parameters");
+    }
     Vector< std::string > vertexes;
     for (size_t i = 0; i < vertexesCount; ++i)
     {
       std::string vertexName;
-      in >> vertexName;
+      if (!(in >> vertexName))
+      {
+        throw std::runtime_error("Invalid command parameters");
+      }
       vertexes.pushBack(vertexName);
     }
     Graph result = graphs.at(graphName).extract(vertexes);

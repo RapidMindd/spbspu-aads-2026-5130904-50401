@@ -3,19 +3,20 @@
 #include "hash_table.hpp"
 #include "hmac_hash.hpp"
 
-using namespace tarasenko;
-
-using HTable = HashTable< int, int >;
-
-struct ConstHash
+namespace
 {
-  size_t operator()(int) const
-  {
-    return 777;
-  }
-};
+  using HTable = tarasenko::HashTable< int, int >;
 
-using CollisionTable = HashTable< int, int, ConstHash >;
+  struct ConstHash
+  {
+    size_t operator()(int) const
+    {
+      return 777;
+    }
+  };
+
+  using CollisionTable = tarasenko::HashTable< int, int, ConstHash >;
+}
 
 BOOST_AUTO_TEST_CASE(default_constructor)
 {
@@ -96,7 +97,7 @@ BOOST_AUTO_TEST_CASE(rehash_many_elems)
 
 BOOST_AUTO_TEST_CASE(default_template_parameters)
 {
-  HashTable< int, std::string > table;
+  tarasenko::HashTable< int, std::string > table;
   table.add(1, "hello");
   BOOST_TEST(table.at(1) == "hello");
 }
@@ -242,8 +243,8 @@ BOOST_AUTO_TEST_CASE(cycle_by_iterators)
 
 BOOST_AUTO_TEST_CASE(comparison_operator_for_table)
 {
-  HmacHash< int > hash1("some_key");
-  HmacHash< int > hash2("another_key");
+  tarasenko::HmacHash< int > hash1("some_key");
+  tarasenko::HmacHash< int > hash2("another_key");
   HTable table1(64, hash1);
   HTable table2(64, hash2);
   for (int i = 0; i < 10; ++i)
