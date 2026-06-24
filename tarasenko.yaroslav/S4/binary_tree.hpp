@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <algorithm>
 #include <functional>
+#include <memory>
 
 namespace tarasenko
 {
@@ -498,13 +499,13 @@ namespace tarasenko
   template< class Key, class Value >
   std::pair< Key, Value >* BSTIterator< Key, Value >::operator->()
   {
-    return &node_->data;
+    return std::addressof(node_->data);
   }
 
   template< class Key, class Value >
   const std::pair< Key, Value >* BSTConstIterator< Key, Value >::operator->() const
   {
-    return &node_->data;
+    return std::addressof(node_->data);
   }
 
   template< class Key, class Value >
