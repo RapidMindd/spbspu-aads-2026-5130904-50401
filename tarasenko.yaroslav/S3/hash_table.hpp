@@ -151,7 +151,7 @@ namespace tarasenko
   void HashTable< Key, Value, Hash, Equal >::add(const Key& key, const Value& val)
   {
     size_t slot = hash_(key) % table_.getSize();
-    const auto& list = table_[slot];
+    const Bucket& list = table_[slot];
     for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
@@ -167,7 +167,7 @@ namespace tarasenko
   void HashTable< Key, Value, Hash, Equal >::add(const Key& key, Value&& val)
   {
     size_t slot = hash_(key) % table_.getSize();
-    const auto& list = table_[slot];
+    const Bucket& list = table_[slot];
     for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
@@ -183,7 +183,7 @@ namespace tarasenko
   size_t HashTable< Key, Value, Hash, Equal >::drop(const Key& key)
   {
     size_t slot = hash_(key) % table_.getSize();
-    auto& list = table_[slot];
+    Bucket& list = table_[slot];
     for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
@@ -200,7 +200,7 @@ namespace tarasenko
   const Value& HashTable< Key, Value, Hash, Equal >::at(const Key& key) const
   {
     size_t slot = hash_(key) % table_.getSize();
-    const auto& list = table_[slot];
+    const Bucket& list = table_[slot];
     for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
@@ -215,7 +215,7 @@ namespace tarasenko
   bool HashTable< Key, Value, Hash, Equal >::has(const Key& key) const
   {
     size_t slot = hash_(key) % table_.getSize();
-    const auto& list = table_[slot];
+    const Bucket& list = table_[slot];
     for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
@@ -508,7 +508,7 @@ namespace tarasenko
   Value& HashTable< Key, Value, Hash, Equal >::at(const Key& key)
   {
     size_t slot = hash_(key) % table_.getSize();
-    auto& list = table_[slot];
+    Bucket& list = table_[slot];
     for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
@@ -523,7 +523,7 @@ namespace tarasenko
   Value& HashTable< Key, Value, Hash, Equal >::operator[](const Key& key)
   {
     size_t slot = hash_(key) % table_.getSize();
-    auto& list = table_[slot];
+    Bucket& list = table_[slot];
     for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))
@@ -540,7 +540,7 @@ namespace tarasenko
   Value& HashTable< Key, Value, Hash, Equal >::operator[](Key&& key)
   {
     size_t slot = hash_(key) % table_.getSize();
-    auto& list = table_[slot];
+    Bucket& list = table_[slot];
     for (auto it = list.begin(); it != list.end(); ++it)
     {
       if (equal_(it->first, key))

@@ -252,7 +252,7 @@ int main(int argc, char** argv)
     catch (const std::exception&)
     {
       std::cout << "<INVALID COMMAND>\n";
-      auto toignore = std::numeric_limits< std::streamsize >::max();
+      std::streamsize toignore = std::numeric_limits< std::streamsize >::max();
       std::cin.clear();
       std::cin.ignore(toignore, '\n');
     }

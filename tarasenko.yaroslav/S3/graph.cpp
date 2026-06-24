@@ -5,6 +5,14 @@
 
 namespace tarasenko
 {
+  namespace
+  {
+    bool compareEdges(const EdgeInfo& lhs, const EdgeInfo& rhs)
+    {
+      return lhs.vertex < rhs.vertex;
+    }
+  }
+
   void Graph::addVertex(const std::string& name)
   {
     vertexes_.add(name, true);
@@ -98,11 +106,7 @@ namespace tarasenko
     {
       std::sort(it->weights.begin(), it->weights.end());
     }
-    auto compare = [](const EdgeInfo& lhs, const EdgeInfo& rhs)
-    {
-      return lhs.vertex < rhs.vertex;
-    };
-    std::sort(edges.begin(), edges.end(), compare);
+    std::sort(edges.begin(), edges.end(), compareEdges);
   }
 
   Vector< EdgeInfo > Graph::getOutbound(const std::string& vertex) const
