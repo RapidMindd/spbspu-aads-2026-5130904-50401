@@ -33,9 +33,9 @@ namespace tarasenko
     bool has(const Key& key) const;
     void rehash(size_t slots);
 
-    size_t getSize() const;
-    size_t getCapacity() const;
-    bool isEmpty() const;
+    size_t size() const;
+    size_t capacity() const;
+    bool empty() const;
 
     void swap(HashTable< Key, Value, Hash, Equal >& rhs) noexcept;
 
@@ -217,13 +217,13 @@ namespace tarasenko
   }
 
   ht_template
-  size_t ht_type::getSize() const
+  size_t ht_type::size() const
   {
     return size_;
   }
 
   ht_template
-  size_t ht_type::getCapacity() const
+  size_t ht_type::capacity() const
   {
     return table_.getSize();
   }
@@ -251,7 +251,7 @@ namespace tarasenko
   ht_template
   bool operator==(const ht_type& lhs, const ht_type& rhs)
   {
-    if (lhs.getSize() != rhs.getSize())
+    if (lhs.size() != rhs.size())
     {
       return false;
     }
@@ -530,9 +530,9 @@ namespace tarasenko
   }
 
   ht_template
-  bool ht_type::isEmpty() const
+  bool ht_type::empty() const
   {
-    return getSize() == 0;
+    return size() == 0;
   }
 
   #undef ht_template

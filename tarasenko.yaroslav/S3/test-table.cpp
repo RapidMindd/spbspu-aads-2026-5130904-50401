@@ -20,16 +20,16 @@ using CollisionTable = HashTable< int, int, ConstHash >;
 BOOST_AUTO_TEST_CASE(default_constructor)
 {
   HTable table;
-  BOOST_TEST(table.getSize() == 0);
-  BOOST_TEST(table.getCapacity() == 64);
-  BOOST_TEST(table.isEmpty());
+  BOOST_TEST(table.size() == 0);
+  BOOST_TEST(table.capacity() == 64);
+  BOOST_TEST(table.empty());
 }
 
 BOOST_AUTO_TEST_CASE(add)
 {
   HTable table;
   table.add(1, 1);
-  BOOST_TEST(table.getSize() == 1);
+  BOOST_TEST(table.size() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(drop)
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(drop)
   table.add(1, 1);
   BOOST_TEST(!table.drop(2));
   BOOST_TEST(table.drop(1));
-  BOOST_TEST(table.getSize() == 0);
+  BOOST_TEST(table.size() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(get)
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(get)
   HTable table;
   table.add(1, 1);
   BOOST_TEST(table.at(1) == 1);
-  BOOST_TEST(table.getSize() == 1);
+  BOOST_TEST(table.size() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(get_empty)
@@ -71,8 +71,8 @@ BOOST_AUTO_TEST_CASE(rehash)
   HTable table;
   table.add(1, 1);
   table.rehash(128);
-  BOOST_TEST(table.getCapacity() == 128);
-  BOOST_TEST(table.getSize() == 1);
+  BOOST_TEST(table.capacity() == 128);
+  BOOST_TEST(table.size() == 1);
   BOOST_TEST(table.has(1));
 }
 
@@ -85,8 +85,8 @@ BOOST_AUTO_TEST_CASE(rehash_many_elems)
   }
   HTable copy = table;
   table.rehash(77);
-  BOOST_TEST(table.getCapacity() == 77);
-  BOOST_TEST(table.getSize() == 20);
+  BOOST_TEST(table.capacity() == 77);
+  BOOST_TEST(table.size() == 20);
   for (int i = 0; i < 20; ++i)
   {
     BOOST_TEST(table.at(i) == i * 5);
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(default_template_parameters)
 BOOST_AUTO_TEST_CASE(trying_to_create_empty_table)
 {
   HTable table(0);
-  BOOST_TEST(table.getCapacity() == 1);
+  BOOST_TEST(table.capacity() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(add_elems_by_same_key)
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(add_elems_by_same_key)
   HTable table;
   table.add(1, 1);
   table.add(1, 2);
-  BOOST_TEST(table.getSize() == 1);
+  BOOST_TEST(table.size() == 1);
   BOOST_TEST(table.at(1) == 1);
 }
 
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(collision_add_and_get)
   table.add(1, 10);
   table.add(2, 20);
   table.add(3, 30);
-  BOOST_TEST(table.getSize() == 3);
+  BOOST_TEST(table.size() == 3);
   BOOST_TEST(table.at(1) == 10);
   BOOST_TEST(table.at(2) == 20);
   BOOST_TEST(table.at(3) == 30);
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(collision_drop)
   table.add(2, 20);
   table.add(3, 30);
   BOOST_TEST(table.drop(2));
-  BOOST_TEST(table.getSize() == 2);
+  BOOST_TEST(table.size() == 2);
   BOOST_TEST(!table.has(2));
   BOOST_TEST(table.at(1) == 10);
   BOOST_TEST(table.at(3) == 30);
@@ -317,12 +317,12 @@ BOOST_AUTO_TEST_CASE(square_brackets)
   HTable table;
   int key = 1;
   BOOST_TEST(table[key] == 0);
-  BOOST_TEST(table.getSize() == 1);
+  BOOST_TEST(table.size() == 1);
   table[key] = 10;
   BOOST_TEST(table.at(1) == 10);
-  BOOST_TEST(table.getSize() == 1);
+  BOOST_TEST(table.size() == 1);
   BOOST_TEST(table[2] == 0);
-  BOOST_TEST(table.getSize() == 2);
+  BOOST_TEST(table.size() == 2);
   table[2] = 20;
   BOOST_TEST(table.at(2) == 20);
 }
