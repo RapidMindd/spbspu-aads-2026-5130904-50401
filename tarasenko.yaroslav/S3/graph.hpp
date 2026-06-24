@@ -3,6 +3,7 @@
 
 #include <string>
 #include <utility>
+#include <iostream>
 #include "hash_table.hpp"
 #include "vector.hpp"
 
@@ -17,7 +18,6 @@ namespace tarasenko
 
   class Graph
   {
-    friend Graph merge(const Graph& lhs, const Graph& rhs);
   public:
     void addVertex(const std::string& name);
     bool hasVertex(const std::string& name) const;
@@ -34,6 +34,8 @@ namespace tarasenko
     void swap(Graph& rhs) noexcept;
 
   private:
+    friend Graph merge(const Graph& lhs, const Graph& rhs);
+
     HashTable<
       std::pair< std::string, std::string >,
       Vector< unsigned int >
@@ -43,7 +45,7 @@ namespace tarasenko
   };
 
   Graph merge(const Graph& lhs, const Graph& rhs);
-  HashTable< std::string, Graph > getFromFile(const std::string& filename);
+  HashTable< std::string, Graph > getFromFile(std::istream& input);
 }
 
 #endif

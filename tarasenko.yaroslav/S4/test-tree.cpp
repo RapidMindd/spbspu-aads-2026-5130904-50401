@@ -8,43 +8,48 @@ using Tree = BSTree< int, int >;
 BOOST_AUTO_TEST_CASE(default_constructor)
 {
   Tree tree;
-  BOOST_TEST(tree.isEmpty());
-  BOOST_TEST(tree.getSize() == 0);
+  BOOST_TEST(tree.empty());
+  BOOST_TEST(tree.size() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(add)
 {
   Tree tree;
-  tree.add(1, 1);
-  BOOST_TEST(!tree.isEmpty());
-  BOOST_TEST(tree.getSize() == 1);
-  BOOST_TEST(tree.get(1) == 1);
+  auto result = tree.add(1, 1);
+  BOOST_TEST(result.second);
+  BOOST_TEST(result.first->first == 1);
+  BOOST_TEST(result.first->second == 1);
+  BOOST_TEST(!tree.empty());
+  BOOST_TEST(tree.size() == 1);
+  BOOST_TEST(tree.at(1) == 1);
 }
 
 BOOST_AUTO_TEST_CASE(add_existing)
 {
   Tree tree;
   tree.add(1, 1);
-  BOOST_TEST(!tree.add(1, 2));
-  BOOST_TEST(tree.get(1) == 1);
+  auto result = tree.add(1, 2);
+  BOOST_TEST(!result.second);
+  BOOST_TEST(result.first->first == 1);
+  BOOST_TEST(tree.at(1) == 1);
 }
 
 BOOST_AUTO_TEST_CASE(drop)
 {
   Tree tree;
   tree.add(1, 1);
-  BOOST_TEST(tree.drop(1));
-  BOOST_TEST(tree.isEmpty());
-  BOOST_TEST(tree.getSize() == 0);
-  BOOST_TEST(!tree.drop(1));
+  BOOST_TEST(tree.drop(1) == 1);
+  BOOST_TEST(tree.empty());
+  BOOST_TEST(tree.size() == 0);
+  BOOST_TEST(tree.drop(1) == 0);
 }
 
 BOOST_AUTO_TEST_CASE(get)
 {
   Tree tree;
   tree.add(1, 1);
-  BOOST_TEST(tree.get(1) == 1);
-  BOOST_CHECK_THROW(tree.get(2), std::runtime_error);
+  BOOST_TEST(tree.at(1) == 1);
+  BOOST_CHECK_THROW(tree.at(2), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(const_get)
@@ -52,8 +57,8 @@ BOOST_AUTO_TEST_CASE(const_get)
   Tree tree;
   tree.add(1, 1);
   const Tree ctree = tree;
-  BOOST_TEST(ctree.get(1) == 1);
-  BOOST_CHECK_THROW(ctree.get(2), std::runtime_error);
+  BOOST_TEST(ctree.at(1) == 1);
+  BOOST_CHECK_THROW(ctree.at(2), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(has)
@@ -67,20 +72,20 @@ BOOST_AUTO_TEST_CASE(has)
 BOOST_AUTO_TEST_CASE(initializer_list)
 {
   Tree tree = {{1, 1}, {2, 2}, {3, 3}};
-  BOOST_TEST(tree.getSize() == 3);
-  BOOST_TEST(tree.get(1) == 1);
-  BOOST_TEST(tree.get(2) == 2);
-  BOOST_TEST(tree.get(3) == 3);
+  BOOST_TEST(tree.size() == 3);
+  BOOST_TEST(tree.at(1) == 1);
+  BOOST_TEST(tree.at(2) == 2);
+  BOOST_TEST(tree.at(3) == 3);
 }
 
 BOOST_AUTO_TEST_CASE(copy_constructor)
 {
   Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
   Tree copy = tree;
-  BOOST_TEST(copy.getSize() == 4);
+  BOOST_TEST(copy.size() == 4);
   for (int i = 1; i <= 4; ++i)
   {
-    BOOST_TEST(copy.get(i) == i);
+    BOOST_TEST(copy.at(i) == i);
   }
 }
 
@@ -89,10 +94,10 @@ BOOST_AUTO_TEST_CASE(copy_assignment)
   Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
   Tree copy;
   copy = tree;
-  BOOST_TEST(copy.getSize() == 4);
+  BOOST_TEST(copy.size() == 4);
   for (int i = 1; i <= 4; ++i)
   {
-    BOOST_TEST(copy.get(i) == i);
+    BOOST_TEST(copy.at(i) == i);
   }
 }
 
@@ -100,10 +105,10 @@ BOOST_AUTO_TEST_CASE(move_constructor)
 {
   Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
   Tree copy = std::move(tree);
-  BOOST_TEST(copy.getSize() == 4);
+  BOOST_TEST(copy.size() == 4);
   for (int i = 1; i <= 4; ++i)
   {
-    BOOST_TEST(copy.get(i) == i);
+    BOOST_TEST(copy.at(i) == i);
   }
 }
 
@@ -112,10 +117,10 @@ BOOST_AUTO_TEST_CASE(move_assignment)
   Tree tree = {{2, 2}, {1, 1}, {4, 4}, {3, 3}};
   Tree copy;
   copy = std::move(tree);
-  BOOST_TEST(copy.getSize() == 4);
+  BOOST_TEST(copy.size() == 4);
   for (int i = 1; i <= 4; ++i)
   {
-    BOOST_TEST(copy.get(i) == i);
+    BOOST_TEST(copy.at(i) == i);
   }
 }
 
@@ -240,7 +245,7 @@ BOOST_AUTO_TEST_CASE(rotate_left)
   BOOST_TEST(tree.height(root) == 3);
   BOOST_TEST(tree.height() == 3);
   BOOST_TEST(tree.height(++tree.begin()) == 2);
-  BOOST_TEST(tree.getSize() == 3);
+  BOOST_TEST(tree.size() == 3);
   int i = 1;
   for (auto pos = tree.begin(); pos != tree.end(); ++pos)
   {
@@ -257,7 +262,7 @@ BOOST_AUTO_TEST_CASE(rotate_right)
   BOOST_TEST(tree.height(root) == 3);
   BOOST_TEST(tree.height() == 3);
   BOOST_TEST(tree.height(++tree.begin()) == 2);
-  BOOST_TEST(tree.getSize() == 3);
+  BOOST_TEST(tree.size() == 3);
   int i = 1;
   for (auto pos = tree.begin(); pos != tree.end(); ++pos)
   {
@@ -276,7 +281,7 @@ BOOST_AUTO_TEST_CASE(rotate_large_left)
   BOOST_TEST(tree.height(root) == 3);
   BOOST_TEST(tree.height() == 3);
   BOOST_TEST(tree.height(++tree.begin()) == 2);
-  BOOST_TEST(tree.getSize() == 4);
+  BOOST_TEST(tree.size() == 4);
   int i = 1;
   for (auto pos = tree.begin(); pos != tree.end(); ++pos)
   {
@@ -295,11 +300,26 @@ BOOST_AUTO_TEST_CASE(rotate_large_right)
   BOOST_TEST(tree.height(root) == 3);
   BOOST_TEST(tree.height() == 3);
   BOOST_TEST(tree.height(++tree.begin()) == 3);
-  BOOST_TEST(tree.getSize() == 4);
+  BOOST_TEST(tree.size() == 4);
   int i = 2;
   for (auto pos = tree.begin(); pos != tree.end(); ++pos)
   {
     BOOST_TEST(pos->first == i);
     ++i;
   }
+}
+
+BOOST_AUTO_TEST_CASE(index_operator)
+{
+  Tree tree;
+  tree[1] = 10;
+  BOOST_TEST(tree.size() == 1);
+  BOOST_TEST(tree.at(1) == 10);
+  tree[1] = 20;
+  BOOST_TEST(tree.size() == 1);
+  BOOST_TEST(tree.at(1) == 20);
+  int key = 2;
+  tree[std::move(key)] = 30;
+  BOOST_TEST(tree.size() == 2);
+  BOOST_TEST(tree.at(2) == 30);
 }
