@@ -8,7 +8,6 @@
 #include "bidir_list.hpp"
 #include "vector.hpp"
 #include "hmac_hash.hpp"
-#include "equal_to.hpp"
 
 namespace tarasenko
 {
@@ -18,14 +17,15 @@ namespace tarasenko
   template< class Key, class Value, class Hash, class Equal >
   class HashTableConstForwardIterator;
 
-  template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = EqualTo< Key > >
+  template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
   class HashTable
   {
   public:
     HashTable(size_t slots = 64, const Hash& hash = Hash(), const Equal& equal = Equal());
 
     void add(const Key& key, const Value& val);
-    bool drop(const Key& key);
+    void add(const Key& key, Value&& val);
+    size_t drop(const Key& key);
     const Value& get(const Key& key) const;
     Value& get(const Key& key);
     bool has(const Key& key) const;
@@ -152,7 +152,23 @@ namespace tarasenko
   }
 
   ht_template
-  bool ht_type::drop(const Key& key)
+  void ht_type::add(const Key& key, Value&& val)
+  {
+    size_t slot = hash_(key) % table_.getSize();
+    const auto& list = table_[slot];
+    for (auto it = list.begin(); it != list.end(); ++it)
+    {
+      if (equal_(it->first, key))
+      {
+        return;
+      }
+    }
+    table_[slot].push_front({key, std::move(val)});
+    ++size_;
+  }
+
+  ht_template
+  size_t ht_type::drop(const Key& key)
   {
     size_t slot = hash_(key) % table_.getSize();
     auto& list = table_[slot];
@@ -162,10 +178,10 @@ namespace tarasenko
       {
         list.erase(it);
         --size_;
-        return true;
+        return 1;
       }
     }
-    return false;
+    return 0;
   }
 
   ht_template
