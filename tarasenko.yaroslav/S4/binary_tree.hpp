@@ -6,7 +6,7 @@
 #include <utility>
 #include <initializer_list>
 #include <algorithm>
-#include "less_to.hpp"
+#include <functional>
 
 namespace tarasenko
 {
@@ -39,7 +39,7 @@ namespace tarasenko
     size_t height(Node< Key, Value >* node);
   }
 
-  template< class Key, class Value, class Compare = LessTo< Key > >
+  template< class Key, class Value, class Compare = std::less< Key > >
   class BSTree
   {
   public:
