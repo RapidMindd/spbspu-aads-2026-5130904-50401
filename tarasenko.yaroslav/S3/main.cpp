@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <exception>
+#include <fstream>
 #include "hash_table.hpp"
 #include "graph.hpp"
 
@@ -229,7 +230,13 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  HTable graphs = getFromFile(argv[1]);
+  std::ifstream input(argv[1]);
+  if (!input)
+  {
+    std::cerr << "Failed to open file\n";
+    return 1;
+  }
+  HTable graphs = getFromFile(input);
   using cmd_t = void(*)(std::istream&, std::ostream&, HTable&);
   HashTable< std::string, cmd_t > cmds;
   cmds.add("graphs", showGraphs);

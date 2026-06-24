@@ -1,5 +1,5 @@
 #include "graph.hpp"
-#include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include <algorithm>
 
@@ -233,14 +233,8 @@ bool tarasenko::operator==(const tarasenko::EdgeInfo& lhs, const tarasenko::Edge
   return lhs.vertex == rhs.vertex && lhs.weights == rhs.weights;
 }
 
-tarasenko::HashTable< std::string, tarasenko::Graph > tarasenko::getFromFile(const std::string& filename)
+tarasenko::HashTable< std::string, tarasenko::Graph > tarasenko::getFromFile(std::istream& input)
 {
-  std::ifstream input(filename);
-  if (!input)
-  {
-    throw std::runtime_error("Failed to open file");
-  }
-
   tarasenko::HashTable< std::string, tarasenko::Graph > graphs;
   std::string line;
   while (std::getline(input, line))

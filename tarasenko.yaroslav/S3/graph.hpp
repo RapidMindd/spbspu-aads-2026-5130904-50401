@@ -3,6 +3,7 @@
 
 #include <string>
 #include <utility>
+#include <iostream>
 #include "hash_table.hpp"
 #include "vector.hpp"
 
@@ -44,7 +45,7 @@ namespace tarasenko
   };
 
   Graph merge(const Graph& lhs, const Graph& rhs);
-  HashTable< std::string, Graph > getFromFile(const std::string& filename);
+  HashTable< std::string, Graph > getFromFile(std::istream& input);
 }
 
 #endif
