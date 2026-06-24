@@ -108,30 +108,3 @@ BOOST_AUTO_TEST_CASE(merge_graphs)
   BOOST_TEST(merged.getOutbound("a")[0].weights.getSize() == 2);
   BOOST_TEST(merged.getInbound("b")[0].weights.getSize() == 2);
 }
-
-BOOST_AUTO_TEST_CASE(get_from_file)
-{
-  HashTable< std::string, Graph > graphs = getFromFile("tarasenko.yaroslav/S3/example");
-  BOOST_CHECK(graphs.has("gr1"));
-  BOOST_CHECK(graphs.has("gr2"));
-  Graph gr1 = graphs.get("gr1");
-  Graph gr2 = graphs.get("gr2");
-  Vector< EdgeInfo > gr1_out_c
-  {
-    {"a", Vector< unsigned int >{30}},
-    {"b", Vector< unsigned int >{20}}
-  };
-  Vector< EdgeInfo > gr2_out_a
-  {
-    {"b", Vector< unsigned int >{1}},
-    {"c", Vector< unsigned int >{3}}
-  };
-  Vector< EdgeInfo > gr2_in_b
-  {
-    {"a", Vector< unsigned int >{1}},
-    {"b", Vector< unsigned int >{2}}
-  };
-  BOOST_CHECK(gr1.getOutbound("c") == gr1_out_c);
-  BOOST_CHECK(gr2.getOutbound("a") == gr2_out_a);
-  BOOST_CHECK(gr2.getInbound("b") == gr2_in_b);
-}

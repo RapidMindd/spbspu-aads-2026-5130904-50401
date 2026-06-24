@@ -21,8 +21,6 @@ namespace tarasenko
   template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = EqualTo< Key > >
   class HashTable
   {
-    friend class HashTableForwardIterator< Key, Value, Hash, Equal >;
-    friend class HashTableConstForwardIterator< Key, Value, Hash, Equal >;
   public:
     HashTable(size_t slots = 64, const Hash& hash = Hash(), const Equal& equal = Equal());
 
@@ -49,6 +47,9 @@ namespace tarasenko
     HashTableConstForwardIterator< Key, Value, Hash, Equal > cend() const;
 
   private:
+    friend class HashTableForwardIterator< Key, Value, Hash, Equal >;
+    friend class HashTableConstForwardIterator< Key, Value, Hash, Equal >;
+
     Vector< BidirList< std::pair< Key, Value > > > table_;
     size_t size_ = 0;
     Hash hash_;
@@ -66,7 +67,6 @@ namespace tarasenko
   template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
   class HashTableForwardIterator
   {
-    friend class HashTable< Key, Value, Hash, Equal >;
   public:
     HashTableForwardIterator();
 
@@ -80,6 +80,8 @@ namespace tarasenko
     bool operator!=(const HashTableForwardIterator& rhs) const;
 
   private:
+    friend class HashTable< Key, Value, Hash, Equal >;
+
     HashTable< Key, Value, Hash, Equal >* owner_;
     VecIt< BidirList< std::pair< Key, Value > > > bucketIt_;
     ListIter<std::pair< Key, Value > > listIt_;
@@ -92,7 +94,6 @@ namespace tarasenko
   template< class Key, class Value, class Hash = HmacHash< Key >, class Equal = std::equal_to< Key > >
   class HashTableConstForwardIterator
   {
-    friend class HashTable< Key, Value, Hash, Equal >;
   public:
     HashTableConstForwardIterator();
 
@@ -106,6 +107,8 @@ namespace tarasenko
     bool operator!=(const HashTableConstForwardIterator& rhs) const;
 
   private:
+    friend class HashTable< Key, Value, Hash, Equal >;
+
     const HashTable< Key, Value, Hash, Equal >* owner_;
     VecConstIt< BidirList< std::pair< Key, Value > > > bucketIt_;
     ListConstIter<std::pair< Key, Value > > listIt_;
