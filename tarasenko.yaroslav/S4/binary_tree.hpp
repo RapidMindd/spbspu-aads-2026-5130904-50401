@@ -21,10 +21,10 @@ namespace tarasenko
     template< class Key, class Value >
     struct Node
     {
-      std::pair< Key, Value > data_;
-      Node< Key, Value >* left_;
-      Node< Key, Value >* right_;
-      Node< Key, Value >* parent_;
+      std::pair< Key, Value > data;
+      Node< Key, Value >* left;
+      Node< Key, Value >* right;
+      Node< Key, Value >* parent;
     };
 
     template< class Key, class Value >
@@ -172,25 +172,25 @@ namespace tarasenko
     tree_node* cur = root_;
     while (cur)
     {
-      if (comp_(cur->data_.first, key))
+      if (comp_(cur->data.first, key))
       {
-        if (!cur->right_)
+        if (!cur->right)
         {
-          cur->right_ = new tree_node{{key, val}, nullptr, nullptr, cur};
+          cur->right = new tree_node{{key, val}, nullptr, nullptr, cur};
           ++size_;
           return true;
         }
-        cur = cur->right_;
+        cur = cur->right;
       }
-      else if (comp_(key, cur->data_.first))
+      else if (comp_(key, cur->data.first))
       {
-        if (!cur->left_)
+        if (!cur->left)
         {
-          cur->left_ = new tree_node{{key, val}, nullptr, nullptr, cur};
+          cur->left = new tree_node{{key, val}, nullptr, nullptr, cur};
           ++size_;
           return true;
         }
-        cur = cur->left_;
+        cur = cur->left;
       }
       else
       {
@@ -206,13 +206,13 @@ namespace tarasenko
     tree_node* cur = root_;
     while (cur)
     {
-      if (comp_(cur->data_.first, key))
+      if (comp_(cur->data.first, key))
       {
-        cur = cur->right_;
+        cur = cur->right;
       }
-      else if (comp_(key, cur->data_.first))
+      else if (comp_(key, cur->data.first))
       {
-        cur = cur->left_;
+        cur = cur->left;
       }
       else
       {
@@ -225,21 +225,21 @@ namespace tarasenko
   tree_template
   void tree_type::replace(tree_node* node, tree_node* child)
   {
-    if (node->parent_ == nullptr)
+    if (node->parent == nullptr)
     {
       root_ = child;
     }
-    else if (node == node->parent_->left_)
+    else if (node == node->parent->left)
     {
-      node->parent_->left_ = child;
+      node->parent->left = child;
     }
     else
     {
-      node->parent_->right_ = child;
+      node->parent->right = child;
     }
     if (child)
     {
-      child->parent_ = node->parent_;
+      child->parent = node->parent;
     }
   }
 
@@ -251,30 +251,30 @@ namespace tarasenko
     {
       return false;
     }
-    if (!node->left_)
+    if (!node->left)
     {
-      replace(node, node->right_);
+      replace(node, node->right);
       delete node;
       --size_;
       return true;
     }
-    if (!node->right_)
+    if (!node->right)
     {
-      replace(node, node->left_);
+      replace(node, node->left);
       delete node;
       --size_;
       return true;
     }
-    tree_node* next = detail::fallLeft(node->right_);
-    if (next->parent_ != node)
+    tree_node* next = detail::fallLeft(node->right);
+    if (next->parent != node)
     {
-      replace(next, next->right_);
-      next->right_ = node->right_;
-      next->right_->parent_ = next;
+      replace(next, next->right);
+      next->right = node->right;
+      next->right->parent = next;
     }
     replace(node, next);
-    next->left_ = node->left_;
-    next->left_->parent_ = next;
+    next->left = node->left;
+    next->left->parent = next;
     delete node;
     --size_;
     return true;
@@ -307,7 +307,7 @@ namespace tarasenko
     {
       throw std::runtime_error("Key not found");
     }
-    return node->data_.second;
+    return node->data.second;
   }
 
   tree_template
@@ -341,8 +341,8 @@ namespace tarasenko
   {
     if (node)
     {
-      clear(node->left_);
-      clear(node->right_);
+      clear(node->left);
+      clear(node->right);
       delete node;
     }
   }
@@ -354,11 +354,11 @@ namespace tarasenko
     {
       return nullptr;
     }
-    tree_node* cur = new tree_node{node->data_, nullptr, nullptr, parent};
+    tree_node* cur = new tree_node{node->data, nullptr, nullptr, parent};
     try
     {
-      cur->left_ = copy(node->left_, cur);
-      cur->right_ = copy(node->right_, cur);
+      cur->left = copy(node->left, cur);
+      cur->right = copy(node->right, cur);
     }
     catch (...)
     {
@@ -456,33 +456,33 @@ namespace tarasenko
   iter_template
   std::pair< Key, Value >& tree_iterator::operator*() const
   {
-    return node_->data_;
+    return node_->data;
   }
 
   iter_template
   const std::pair< Key, Value >& tree_const_iterator::operator*() const
   {
-    return node_->data_;
+    return node_->data;
   }
 
   iter_template
   std::pair< Key, Value >* tree_iterator::operator->() const
   {
-    return &node_->data_;
+    return &node_->data;
   }
 
   iter_template
   const std::pair< Key, Value >* tree_const_iterator::operator->() const
   {
-    return &node_->data_;
+    return &node_->data;
   }
 
   template< class Key, class Value >
   tree_node* detail::fallLeft(tree_node* node)
   {
-    while (node && node->left_)
+    while (node && node->left)
     {
-      node = node->left_;
+      node = node->left;
     }
     return node;
   }
@@ -490,26 +490,26 @@ namespace tarasenko
   template< class Key, class Value >
   tree_node* detail::next(tree_node* node)
   {
-    if (node->right_)
+    if (node->right)
     {
-      return fallLeft(node->right_);
+      return fallLeft(node->right);
     }
     else
     {
-      while (node->parent_ && node->parent_->right_ == node)
+      while (node->parent && node->parent->right == node)
       {
-        node = node->parent_;
+        node = node->parent;
       }
-      return node->parent_;
+      return node->parent;
     }
   }
 
   template< class Key, class Value >
   tree_node* detail::fallRight(tree_node* node)
   {
-    while (node && node->right_)
+    while (node && node->right)
     {
-      node = node->right_;
+      node = node->right;
     }
     return node;
   }
@@ -517,17 +517,17 @@ namespace tarasenko
   template< class Key, class Value >
   tree_node* detail::prev(tree_node* node)
   {
-    if (node->left_)
+    if (node->left)
     {
-      return fallRight(node->left_);
+      return fallRight(node->left);
     }
     else
     {
-      while (node->parent_ && node->parent_->left_ == node)
+      while (node->parent && node->parent->left == node)
       {
-        node = node->parent_;
+        node = node->parent;
       }
-      return node->parent_;
+      return node->parent;
     }
   }
 
@@ -668,7 +668,7 @@ namespace tarasenko
     {
       return 0;
     }
-    return std::max(height(node->left_), height(node->right_)) + 1;
+    return std::max(height(node->left), height(node->right)) + 1;
   }
 
   tree_template
@@ -693,27 +693,27 @@ namespace tarasenko
   tree_const_iterator tree_type::rotateLeft(tree_const_iterator it)
   {
     detail::Node< Key, Value >* p = it.node_;
-    detail::Node< Key, Value >* q = p->parent_;
-    q->right_ = p->left_;
-    if (p->left_)
+    detail::Node< Key, Value >* q = p->parent;
+    q->right = p->left;
+    if (p->left)
     {
-      p->left_->parent_ = q;
+      p->left->parent = q;
     }
-    p->parent_ = q->parent_;
-    if (!q->parent_)
+    p->parent = q->parent;
+    if (!q->parent)
     {
       root_ = p;
     }
-    else if (q == q->parent_->left_)
+    else if (q == q->parent->left)
     {
-      q->parent_->left_ = p;
+      q->parent->left = p;
     }
     else
     {
-      q->parent_->right_ = p;
+      q->parent->right = p;
     }
-    q->parent_ = p;
-    p->left_ = q;
+    q->parent = p;
+    p->left = q;
     return tree_const_iterator(p, root_);
   }
 
@@ -721,27 +721,27 @@ namespace tarasenko
   tree_const_iterator tree_type::rotateRight(tree_const_iterator it)
   {
     detail::Node< Key, Value >* p = it.node_;
-    detail::Node< Key, Value >* q = p->parent_;
-    q->left_ = p->right_;
-    if (p->right_)
+    detail::Node< Key, Value >* q = p->parent;
+    q->left = p->right;
+    if (p->right)
     {
-      p->right_->parent_ = q;
+      p->right->parent = q;
     }
-    p->parent_ = q->parent_;
-    if (!q->parent_)
+    p->parent = q->parent;
+    if (!q->parent)
     {
       root_ = p;
     }
-    else if (q == q->parent_->left_)
+    else if (q == q->parent->left)
     {
-      q->parent_->left_ = p;
+      q->parent->left = p;
     }
     else
     {
-      q->parent_->right_ = p;
+      q->parent->right = p;
     }
-    q->parent_ = p;
-    p->right_ = q;
+    q->parent = p;
+    p->right = q;
     return tree_const_iterator(p, root_);
   }
 
