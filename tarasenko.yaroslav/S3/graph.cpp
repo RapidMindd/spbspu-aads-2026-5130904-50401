@@ -26,7 +26,7 @@ namespace tarasenko
 
     if (copy.edges_.has(edge))
     {
-      Vector< unsigned int > weights = copy.edges_.get(edge);
+      Vector< unsigned int > weights = copy.edges_.at(edge);
       weights.pushBack(weight);
       copy.edges_.drop(edge);
       copy.edges_.add(edge, weights);
@@ -61,7 +61,7 @@ namespace tarasenko
     }
 
     Graph copy = *this;
-    Vector< unsigned int > weights = copy.edges_.get(edge);
+    Vector< unsigned int > weights = copy.edges_.at(edge);
 
     for (auto it = weights.begin(); it != weights.end(); ++it)
     {

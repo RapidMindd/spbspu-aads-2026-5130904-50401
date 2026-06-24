@@ -45,17 +45,17 @@ BOOST_AUTO_TEST_CASE(get)
 {
   HTable table;
   table.add(1, 1);
-  BOOST_TEST(table.get(1) == 1);
+  BOOST_TEST(table.at(1) == 1);
   BOOST_TEST(table.getSize() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(get_empty)
 {
   HTable table;
-  BOOST_CHECK_THROW(table.get(1), std::runtime_error);
+  BOOST_CHECK_THROW(table.at(1), std::runtime_error);
   table.add(1, 1);
   table.drop(1);
-  BOOST_CHECK_THROW(table.get(1), std::runtime_error);
+  BOOST_CHECK_THROW(table.at(1), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(has)
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(rehash_many_elems)
   BOOST_TEST(table.getSize() == 20);
   for (int i = 0; i < 20; ++i)
   {
-    BOOST_TEST(table.get(i) == i * 5);
+    BOOST_TEST(table.at(i) == i * 5);
   }
   BOOST_CHECK(table == copy);
 }
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(default_template_parameters)
 {
   HashTable< int, std::string > table;
   table.add(1, "hello");
-  BOOST_TEST(table.get(1) == "hello");
+  BOOST_TEST(table.at(1) == "hello");
 }
 
 BOOST_AUTO_TEST_CASE(trying_to_create_empty_table)
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(add_elems_by_same_key)
   table.add(1, 1);
   table.add(1, 2);
   BOOST_TEST(table.getSize() == 1);
-  BOOST_TEST(table.get(1) == 1);
+  BOOST_TEST(table.at(1) == 1);
 }
 
 BOOST_AUTO_TEST_CASE(collision_add_and_get)
@@ -123,9 +123,9 @@ BOOST_AUTO_TEST_CASE(collision_add_and_get)
   table.add(2, 20);
   table.add(3, 30);
   BOOST_TEST(table.getSize() == 3);
-  BOOST_TEST(table.get(1) == 10);
-  BOOST_TEST(table.get(2) == 20);
-  BOOST_TEST(table.get(3) == 30);
+  BOOST_TEST(table.at(1) == 10);
+  BOOST_TEST(table.at(2) == 20);
+  BOOST_TEST(table.at(3) == 30);
 }
 
 BOOST_AUTO_TEST_CASE(collision_drop)
@@ -137,8 +137,8 @@ BOOST_AUTO_TEST_CASE(collision_drop)
   BOOST_TEST(table.drop(2));
   BOOST_TEST(table.getSize() == 2);
   BOOST_TEST(!table.has(2));
-  BOOST_TEST(table.get(1) == 10);
-  BOOST_TEST(table.get(3) == 30);
+  BOOST_TEST(table.at(1) == 10);
+  BOOST_TEST(table.at(3) == 30);
 }
 
 BOOST_AUTO_TEST_CASE(swap)
@@ -148,8 +148,8 @@ BOOST_AUTO_TEST_CASE(swap)
   table1.add(1, 1);
   table2.add(2, 2);
   table1.swap(table2);
-  BOOST_TEST(table1.get(2) == 2);
-  BOOST_TEST(table2.get(1) == 1);
+  BOOST_TEST(table1.at(2) == 2);
+  BOOST_TEST(table2.at(1) == 1);
 }
 
 BOOST_AUTO_TEST_CASE(copy_constructor)
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(copy_constructor)
   HTable table1;
   table1.add(1, 1);
   HTable table2(table1);
-  BOOST_TEST(table2.get(1) == 1);
+  BOOST_TEST(table2.at(1) == 1);
 }
 
 BOOST_AUTO_TEST_CASE(move_constructor)
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(move_constructor)
   HTable table1;
   table1.add(1, 1);
   HTable table2(std::move(table1));
-  BOOST_TEST(table2.get(1) == 1);
+  BOOST_TEST(table2.at(1) == 1);
 }
 
 BOOST_AUTO_TEST_CASE(copy_assignment)
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(copy_assignment)
   table1.add(1, 1);
   HTable table2;
   table2 = table1;
-  BOOST_TEST(table2.get(1) == 1);
+  BOOST_TEST(table2.at(1) == 1);
 }
 
 BOOST_AUTO_TEST_CASE(move_assignment)
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(move_assignment)
   table1.add(1, 1);
   HTable table2;
   table2 = std::move(table1);
-  BOOST_TEST(table2.get(1) == 1);
+  BOOST_TEST(table2.at(1) == 1);
 }
 
 BOOST_AUTO_TEST_CASE(begin)
@@ -310,4 +310,19 @@ BOOST_AUTO_TEST_CASE(ccycle_by_iterators)
     BOOST_TEST(it->second == it->first * 10);
   }
   BOOST_TEST(i == 3);
+}
+
+BOOST_AUTO_TEST_CASE(square_brackets)
+{
+  HTable table;
+  int key = 1;
+  BOOST_TEST(table[key] == 0);
+  BOOST_TEST(table.getSize() == 1);
+  table[key] = 10;
+  BOOST_TEST(table.at(1) == 10);
+  BOOST_TEST(table.getSize() == 1);
+  BOOST_TEST(table[2] == 0);
+  BOOST_TEST(table.getSize() == 2);
+  table[2] = 20;
+  BOOST_TEST(table.at(2) == 20);
 }

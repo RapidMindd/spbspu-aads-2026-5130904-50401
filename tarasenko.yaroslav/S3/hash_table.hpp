@@ -26,8 +26,10 @@ namespace tarasenko
     void add(const Key& key, const Value& val);
     void add(const Key& key, Value&& val);
     size_t drop(const Key& key);
-    const Value& get(const Key& key) const;
-    Value& get(const Key& key);
+    const Value& at(const Key& key) const;
+    Value& at(const Key& key);
+    Value& operator[](const Key& key);
+    Value& operator[](Key&& key);
     bool has(const Key& key) const;
     void rehash(size_t slots);
 
@@ -185,7 +187,7 @@ namespace tarasenko
   }
 
   ht_template
-  const Value& ht_type::get(const Key& key) const
+  const Value& ht_type::at(const Key& key) const
   {
     size_t slot = hash_(key) % table_.getSize();
     const auto& list = table_[slot];
@@ -257,7 +259,7 @@ namespace tarasenko
     {
       for (auto it = lhs.begin(); it != lhs.end(); ++it)
       {
-        if (rhs.get(it->first) != it->second)
+        if (rhs.at(it->first) != it->second)
         {
           return false;
         }
@@ -479,7 +481,7 @@ namespace tarasenko
   }
 
   ht_template
-  Value& ht_type::get(const Key& key)
+  Value& ht_type::at(const Key& key)
   {
     size_t slot = hash_(key) % table_.getSize();
     auto& list = table_[slot];
@@ -491,6 +493,40 @@ namespace tarasenko
       }
     }
     throw std::runtime_error("Key not found");
+  }
+
+  ht_template
+  Value& ht_type::operator[](const Key& key)
+  {
+    size_t slot = hash_(key) % table_.getSize();
+    auto& list = table_[slot];
+    for (auto it = list.begin(); it != list.end(); ++it)
+    {
+      if (equal_(it->first, key))
+      {
+        return it->second;
+      }
+    }
+    list.push_front({key, Value()});
+    ++size_;
+    return list.front().second;
+  }
+
+  ht_template
+  Value& ht_type::operator[](Key&& key)
+  {
+    size_t slot = hash_(key) % table_.getSize();
+    auto& list = table_[slot];
+    for (auto it = list.begin(); it != list.end(); ++it)
+    {
+      if (equal_(it->first, key))
+      {
+        return it->second;
+      }
+    }
+    list.push_front({std::move(key), Value()});
+    ++size_;
+    return list.front().second;
   }
 
   ht_template

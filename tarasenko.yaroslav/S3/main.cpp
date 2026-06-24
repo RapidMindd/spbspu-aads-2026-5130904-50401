@@ -35,7 +35,7 @@ void showVertexes(std::istream& in, std::ostream& out, HTable& graphs)
   in >> graphName;
   if (graphs.has(graphName))
   {
-    Vector< std::string > vertexes = graphs.get(graphName).getVertexes();
+    Vector< std::string > vertexes = graphs.at(graphName).getVertexes();
     if (vertexes.isEmpty())
     {
       out << "\n";
@@ -59,9 +59,9 @@ void showOutbound(std::istream& in, std::ostream& out, HTable& graphs)
   in >> graphName;
   std::string vertexName;
   in >> vertexName;
-  if (graphs.has(graphName) && graphs.get(graphName).hasVertex(vertexName))
+  if (graphs.has(graphName) && graphs.at(graphName).hasVertex(vertexName))
   {
-    Vector< EdgeInfo > outbound = graphs.get(graphName).getOutbound(vertexName);
+    Vector< EdgeInfo > outbound = graphs.at(graphName).getOutbound(vertexName);
     if (outbound.isEmpty())
     {
       out << "\n";
@@ -89,9 +89,9 @@ void showInbound(std::istream& in, std::ostream& out, HTable& graphs)
   in >> graphName;
   std::string vertexName;
   in >> vertexName;
-  if (graphs.has(graphName) && graphs.get(graphName).hasVertex(vertexName))
+  if (graphs.has(graphName) && graphs.at(graphName).hasVertex(vertexName))
   {
-    Vector< EdgeInfo > inbound = graphs.get(graphName).getInbound(vertexName);
+    Vector< EdgeInfo > inbound = graphs.at(graphName).getInbound(vertexName);
     if (inbound.isEmpty())
     {
       out << "\n";
@@ -125,7 +125,7 @@ void bind(std::istream& in, std::ostream&, HTable& graphs)
   in >> weight;
   if (graphs.has(graphName))
   {
-    graphs.get(graphName).bind(from, to, weight);
+    graphs.at(graphName).bind(from, to, weight);
   }
   else
   {
@@ -145,7 +145,7 @@ void cut(std::istream& in, std::ostream&, HTable& graphs)
   in >> weight;
   if (graphs.has(graphName))
   {
-    graphs.get(graphName).cut(from, to, weight);
+    graphs.at(graphName).cut(from, to, weight);
   }
   else
   {
@@ -186,7 +186,7 @@ void mergeGraphs(std::istream& in, std::ostream&, HTable& graphs)
   in >> secondGraphName;
   if (graphs.has(firstGraphName) && graphs.has(secondGraphName) && !graphs.has(resultGraphName))
   {
-    Graph result = merge(graphs.get(firstGraphName), graphs.get(secondGraphName));
+    Graph result = merge(graphs.at(firstGraphName), graphs.at(secondGraphName));
     graphs.add(resultGraphName, result);
   }
   else
@@ -212,7 +212,7 @@ void extractGraph(std::istream& in, std::ostream&, HTable& graphs)
       in >> vertexName;
       vertexes.pushBack(vertexName);
     }
-    Graph result = graphs.get(graphName).extract(vertexes);
+    Graph result = graphs.at(graphName).extract(vertexes);
     graphs.add(resultGraphName, result);
   }
   else
@@ -247,7 +247,7 @@ int main(int argc, char** argv)
   {
     try
     {
-      cmds.get(cmd)(std::cin, std::cout, graphs);
+      cmds.at(cmd)(std::cin, std::cout, graphs);
     }
     catch (const std::exception&)
     {
