@@ -26,5 +26,5 @@ BOOST_AUTO_TEST_CASE(hash_table)
   table.add(1, 1);
   BOOST_TEST(table.has(1));
   BOOST_TEST(!table.has(2));
-  BOOST_TEST(table.get(1) == 1);
+  BOOST_TEST(table.at(1) == 1);
 }
