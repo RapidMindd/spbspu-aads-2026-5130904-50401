@@ -43,12 +43,16 @@ namespace tarasenko
   class BSTree
   {
   public:
+    using const_iterator = BSTConstIterator< Key, Value >;
+    using iterator = BSTIterator< Key, Value >;
+
     BSTree();
-    BSTree(std::initializer_list< std::pair< Key, Value > > list);
-    ~BSTree();
 
     BSTree(const BSTree< Key, Value, Compare >& rhs);
     BSTree(BSTree< Key, Value, Compare >&& rhs) noexcept;
+
+    BSTree(std::initializer_list< std::pair< Key, Value > > list);
+    ~BSTree();
 
     BSTree< Key, Value, Compare >& operator=(const BSTree< Key, Value, Compare >& rhs);
     BSTree< Key, Value, Compare >& operator=(BSTree< Key, Value, Compare >&& rhs) noexcept;
@@ -63,9 +67,6 @@ namespace tarasenko
 
     size_t getSize() const;
     bool isEmpty() const;
-
-    using const_iterator = BSTConstIterator< Key, Value >;
-    using iterator = BSTIterator< Key, Value >;
 
     const_iterator rotateLeft(const_iterator it);
     const_iterator rotateRight(const_iterator it);
