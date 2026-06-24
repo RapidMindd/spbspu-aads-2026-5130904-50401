@@ -15,7 +15,7 @@ namespace tarasenko
   void print(std::istream& in, std::ostream& out, Datasets& datasets);
   void complement(std::istream& in, std::ostream&, Datasets& datasets);
   void intersect(std::istream& in, std::ostream&, Datasets& datasets);
-  void Union(std::istream& in, std::ostream&, Datasets& datasets);
+  void unionFunc(std::istream& in, std::ostream&, Datasets& datasets);
 }
 
 #endif

@@ -24,7 +24,7 @@ int main(int argc, char** argv)
   cmds.add("print", tarasenko::print);
   cmds.add("complement", tarasenko::complement);
   cmds.add("intersect", tarasenko::intersect);
-  cmds.add("union", tarasenko::Union);
+  cmds.add("union", tarasenko::unionFunc);
 
   std::string cmd;
   while (std::cin >> cmd)
@@ -32,6 +32,10 @@ int main(int argc, char** argv)
     try
     {
       cmds.at(cmd)(std::cin, std::cout, datasets);
+      if (cmd == "print")
+      {
+        std::cout << "\n";
+      }
     }
     catch (const std::exception&)
     {

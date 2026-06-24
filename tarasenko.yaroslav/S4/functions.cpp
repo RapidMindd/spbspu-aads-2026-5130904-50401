@@ -74,7 +74,7 @@ void tarasenko::print(std::istream& in, std::ostream& out, Datasets& datasets)
   Dataset& dataset = datasets.at(name);
   if (dataset.empty())
   {
-    out << "<EMPTY>\n";
+    out << "<EMPTY>";
     return;
   }
   out << name;
@@ -82,7 +82,6 @@ void tarasenko::print(std::istream& in, std::ostream& out, Datasets& datasets)
   {
     out << ' ' << it->first << ' ' << it->second;
   }
-  out << '\n';
 }
 
 void tarasenko::complement(std::istream& in, std::ostream&, Datasets& datasets)
@@ -147,7 +146,7 @@ void tarasenko::intersect(std::istream& in, std::ostream&, Datasets& datasets)
   }
 }
 
-void tarasenko::Union(std::istream& in, std::ostream&, Datasets& datasets)
+void tarasenko::unionFunc(std::istream& in, std::ostream&, Datasets& datasets)
 {
   std::string newName;
   std::string lhsName;
